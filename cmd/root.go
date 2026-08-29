@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/nixteg/gofence/internal/config"
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/spf13/cobra"
 )
 
@@ -24,8 +24,7 @@ var rootCmd = &cobra.Command{
 	Long:  "Gofence - Automated reconnaissance, vulnerability scanning and exploitation framework",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if isatty(os.Stdout) && !noTUI {
-			fmt.Println("TUI mode (not yet implemented) — use a subcommand")
-			return cmd.Help()
+			return ux.RunTUI()
 		}
 		return cmd.Help()
 	},
