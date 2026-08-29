@@ -24,7 +24,7 @@ type Config struct {
 
 var cfg *Config
 
-func Init() error {
+func Init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 
@@ -43,12 +43,12 @@ func Init() error {
 	_ = viper.ReadInConfig()
 
 	cfg = &Config{}
-	return viper.Unmarshal(cfg)
+	_ = viper.Unmarshal(cfg)
 }
 
 func Get() *Config {
 	if cfg == nil {
-		_ = Init()
+		Init()
 	}
 	return cfg
 }

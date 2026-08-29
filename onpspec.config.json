@@ -1,0 +1,8 @@
+{
+  "testCommand": "go test ./...",
+  "reporter": "exitcode",
+  "testGlobs": ["**/*_test.go"],
+  "srcGlobs": ["**/*.go"],
+  "specDir": ".spec",
+  "parallel": false
+}
