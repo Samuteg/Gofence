@@ -1,0 +1,779 @@
+{
+  "schema": 1,
+  "sinais": {
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-001": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-001",
+      "ocorrencias": 4,
+      "primeiraVez": "2026-08-29T01:39:16.942Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-004": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-004",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-005": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-005",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-006": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-006",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-007": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-007",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-008": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-008",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-009": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-009",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-010": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-010",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-011": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-011",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-012": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-012",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-013": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-013",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-014": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-014",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-015": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-015",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-016": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-016",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-017": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-017",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-018": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-018",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-019": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-019",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-020": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-020",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-021": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-021",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-022": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-022",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-023": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-023",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-024": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-024",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-025": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-025",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-026": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-026",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.080Z",
+      "ultimaVez": "2026-08-29T01:39:17.080Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-027": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-027",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-028": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-028",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-029": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-029",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-030": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-030",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-031": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-031",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-032": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-032",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-033": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-033",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TASK::gofence-cli::AC-034": {
+      "codigo": "AC_SEM_TASK",
+      "feature": "gofence-cli",
+      "ref": "AC-034",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:39:17.081Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-001": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-001",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-002": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-002",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-003": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-003",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-004": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-004",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-005": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-005",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-006": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-006",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-007": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-007",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-008": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-008",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-009": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-009",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-010": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-010",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-011": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-011",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-012": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-012",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-013": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-013",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-014": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-014",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-015": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-015",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-016": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-016",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-017": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-017",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-018": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-018",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-019": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-019",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-020": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-020",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-021": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-021",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-022": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-022",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-023": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-023",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-024": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-024",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-025": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-025",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-026": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-026",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-027": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-027",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-028": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-028",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-029": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-029",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-030": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-030",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-031": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-031",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-032": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-032",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-033": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-033",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "AC_SEM_TESTE::gofence-cli::AC-034": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "gofence-cli",
+      "ref": "AC-034",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "GLOB_SEM_ARQUIVOS::—::P-002": {
+      "codigo": "GLOB_SEM_ARQUIVOS",
+      "feature": "—",
+      "ref": "P-002",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:39:17.081Z",
+      "ultimaVez": "2026-08-29T01:40:29.767Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-002": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-003": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-003",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-004": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-004",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-005": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-005",
+      "ocorrencias": 3,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-006": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-006",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-007": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-007",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-008": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-008",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-009": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-009",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-010": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-010",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-011": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-011",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-012": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-012",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-013": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-013",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-014": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-014",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-015": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-015",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-016": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-016",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-017": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-017",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-018": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-018",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-019": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-019",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    },
+    "ARQUIVO_INEXISTENTE::gofence-cli::T-020": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "gofence-cli",
+      "ref": "T-020",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T01:40:29.766Z",
+      "ultimaVez": "2026-08-29T01:40:29.766Z",
+      "gitRev": null
+    }
+  }
+}
