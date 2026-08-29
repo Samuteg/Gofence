@@ -26,10 +26,9 @@
 - Arquivos: internal/data/scope.go, internal/data/db.go
 - Notas: Interface ScopeGuard com IsAllowed(ip net.IP) bool. Implementação padrão consulta SQLite. Middleware bloqueia operações fora do escopo com log STDERR
 
-## T-005 — SQLite schema e models [pendente]
-
+## T-005 — SQLite schema e models [concluida]
 - Refs: US-011, AC-023, AC-024, AC-025
-- Arquivos: internal/data/db.go, internal/data/models.go, internal/data/workspace.go
+- Arquivos: internal/data/db.go, internal/data/models.go, internal/data/workspace.go, cmd/workspace.go
 - Notas: Tabelas: workspaces, scope, hosts, ports, findings. Auto-migrate no init. Workspace CRUD (new, list, select, delete com soft delete)
 
 ## T-006 — Root command e detecção TUI/headless [pendente]
@@ -116,8 +115,7 @@
 - Arquivos: internal/ux/headless.go
 - Notas: Detecção isatty. JSON puro no STDOUT. Pipes: stdin de um comando = stdout do anterior. Flags --json, --csv
 
-## T-020 — Integração final e testes [pendente]
-
+## T-020 — Integração final e testes [concluida]
 - Refs: US-001, US-002, US-003, US-004, US-005, US-006, US-007, US-008, US-009, US-010, US-011, US-012, US-013, US-014, US-015
 - Arquivos: main.go, cmd/*.go
 - Notas: Verificar que todos os comandos estão registrados no root. Testes de integração básicos. Build estático: `go build -ldflags '-s -w -extldflags "-static"'`

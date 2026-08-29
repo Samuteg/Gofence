@@ -599,10 +599,10 @@
       "codigo": "GLOB_SEM_ARQUIVOS",
       "feature": "—",
       "ref": "P-002",
-      "ocorrencias": 2,
+      "ocorrencias": 3,
       "primeiraVez": "2026-08-29T01:39:17.081Z",
-      "ultimaVez": "2026-08-29T01:40:29.767Z",
-      "gitRev": null
+      "ultimaVez": "2026-08-29T02:23:23.924Z",
+      "gitRev": "df7c52c"
     },
     "ARQUIVO_INEXISTENTE::gofence-cli::T-002": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -635,10 +635,10 @@
       "codigo": "ARQUIVO_INEXISTENTE",
       "feature": "gofence-cli",
       "ref": "T-005",
-      "ocorrencias": 3,
+      "ocorrencias": 5,
       "primeiraVez": "2026-08-29T01:40:29.766Z",
-      "ultimaVez": "2026-08-29T01:40:29.766Z",
-      "gitRev": null
+      "ultimaVez": "2026-08-29T02:24:07.194Z",
+      "gitRev": "df7c52c"
     },
     "ARQUIVO_INEXISTENTE::gofence-cli::T-006": {
       "codigo": "ARQUIVO_INEXISTENTE",
@@ -770,10 +770,325 @@
       "codigo": "ARQUIVO_INEXISTENTE",
       "feature": "gofence-cli",
       "ref": "T-020",
-      "ocorrencias": 2,
+      "ocorrencias": 4,
       "primeiraVez": "2026-08-29T01:40:29.766Z",
-      "ultimaVez": "2026-08-29T01:40:29.766Z",
-      "gitRev": null
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-001": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-001",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-002": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-002",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-003": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-003",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-004": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-004",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-005": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-005",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-006": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-006",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.923Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-007": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-007",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-008": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-008",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-009": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-009",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-010": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-010",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-011": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-011",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-012": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-012",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-013": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-013",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-014": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-014",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-015": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-015",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-016": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-016",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-017": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-017",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-018": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-018",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-019": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-019",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-020": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-020",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-021": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-021",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-022": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-022",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-023": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-023",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-024": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-024",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-025": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-025",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-026": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-026",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-027": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-027",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-028": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-028",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-029": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-029",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-030": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-030",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-031": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-031",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-032": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-032",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-033": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-033",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "PROVA_FRACA::gofence-cli::AC-034": {
+      "codigo": "PROVA_FRACA",
+      "feature": "gofence-cli",
+      "ref": "AC-034",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:24:07.195Z",
+      "gitRev": "df7c52c"
+    },
+    "ARQUIVO_ORFAO::—::cmd/workspace.go": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "cmd/workspace.go",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-08-29T02:23:23.924Z",
+      "ultimaVez": "2026-08-29T02:23:23.924Z",
+      "gitRev": "df7c52c"
     }
   }
 }
