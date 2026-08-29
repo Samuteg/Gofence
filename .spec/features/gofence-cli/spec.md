@@ -285,24 +285,24 @@ Como pentester, quero perfis de evasão de rate limit (Sneaky, Normal, Aggressiv
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-001 | Go 1.22+ estará disponível no ambiente de compilação | aberta | — |
-| ASM-002 | As APIs do Shodan/Censys/SecurityTrails são acessíveis a partir da rede do pentester | aberta | — |
-| ASM-003 | O binário roda em Linux (amd64/arm64); suporte a Windows/macOS é futuro | aberta | — |
-| ASM-004 | A wordlist de DNS padrão (top 1M) será embutida ou referenciada por caminho | aberta | — |
-| ASM-005 | O SQLite local fica no diretório atual ou em ~/.gofence/ | aberta | — |
-| ASM-006 | O TUI funciona apenas em terminais com suporte a ANSI (256 cores, unicode) | aberta | — |
-| ASM-007 | O handler de sessões não precisa de elevação (root) para portas altas (>1024) | aberta | — |
-| ASM-008 | A validação de escopo consulta o SQLite do workspace ativo | aberta | — |
+| ASM-001 | Go 1.22+ estará disponível no ambiente de compilação | confirmada | Go 1.26.5 usado na implementação |
+| ASM-002 | As APIs do Shodan/Censys/SecurityTrails são acessíveis a partir da rede do pentester | aberta | Depende do ambiente do usuário |
+| ASM-003 | O binário roda em Linux (amd64/arm64); suporte a Windows/macOS é futuro | aberta | Build testado em linux/amd64 |
+| ASM-004 | A wordlist de DNS padrão (top 1M) será embutida ou referenciada por caminho | confirmada | Referenciada via flag `-w` |
+| ASM-005 | O SQLite local fica no diretório atual ou em ~/.gofence/ | confirmada | `~/.gofence/gofence.db` (flag `--db` override) |
+| ASM-006 | O TUI funciona apenas em terminais com suporte a ANSI (256 cores, unicode) | confirmada | Bubbletea + Lipgloss |
+| ASM-007 | O handler de sessões não precisa de elevação (root) para portas altas (>1024) | confirmada | Portas >1024 funcionam sem root |
+| ASM-008 | A validação de escopo consulta o SQLite do workspace ativo | confirmada | ScopeGuard consulta tabela `scope` |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-001 | Qual banco de dados local padrão? O spec diz SQLite, mas precisa confirmar se modernc.org/sqlite (pure Go) ou CGO sqlite3 | aberta | — |
-| Q-002 | O brute force deve ter proteção contra lockout (max tentativas por minute)? | aberta | — |
-| Q-003 | O crawl deve respetar robots.txt ou ignorar para pentest? | aberta | — |
-| Q-004 | Os templates de vulnerabilidade devem seguir formato de alguma ferramenta existente (Nuclei, etc.) ou formato próprio? | aberta | — |
-| Q-005 | O multi-handler deve suportar payload encriptado/encodado na recepção? | aberta | — |
-| Q-006 | Qual o comportamento quando a API do OSINT retorna erro 429 (rate limit)? Retry com backoff ou falha imediata? | aberta | — |
-| Q-007 | O workspace deve suportar deleção lógica (soft delete) ou física? | aberta | — |
-| Q-008 | O modo pipeline deve ter flag `--json` explícito ou detectar automaticamente quando stdout não é um terminal? | aberta | — |
+| Q-001 | Qual banco de dados local padrão? O spec diz SQLite, mas precisa confirmar se modernc.org/sqlite (pure Go) ou CGO sqlite3 | respondida | modernc.org/sqlite (pure Go, binário estático, sem CGO) |
+| Q-002 | O brute force deve ter proteção contra lockout (max tentativas por minute)? | respondida | Sim — backoff exponencial após 5 falhas; flag `--no-backoff` desativa |
+| Q-003 | O crawl deve respetar robots.txt ou ignorar para pentest? | respondida | Ignorar robots.txt (pentest ofensivo) |
+| Q-004 | Os templates de vulnerabilidade devem seguir formato de alguma ferramenta existente (Nuclei, etc.) ou formato próprio? | respondida | Formato compatível com Nuclei (YAML: requests[], matchers[]) |
+| Q-005 | O multi-handler deve suportar payload encriptado/encodado na recepção? | respondida | Sim — decode Base64/XOR na recepção |
+| Q-006 | Qual o comportamento quando a API do OSINT retorna erro 429 (rate limit)? Retry com backoff ou falha imediata? | respondida | Retry com exponential backoff (3 tentativas); falha com mensagem se persistir |
+| Q-007 | O workspace deve suportar deleção lógica (soft delete) ou física? | respondida | Soft delete (coluna `deleted_at`) |
+| Q-008 | O modo pipeline deve ter flag `--json` explícito ou detectar automaticamente quando stdout não é um terminal? | respondida | Ambos — `--json` explícito tem prioridade; auto-detect isatty no stdout |
