@@ -1,6 +1,7 @@
 package surface
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -28,7 +29,7 @@ func TestFuzzerHeader(t *testing.T) {
 	os.WriteFile(wl, []byte("admin\nuser\nguest\n"), 0644)
 
 	fuzzer := NewFuzzer(httpclient.NewFromEnv(), 5)
-	results, err := fuzzer.FuzzWeb(server.URL, wl, "X-Custom: FUZZ", "")
+	results, err := fuzzer.FuzzWeb(context.Background(), server.URL, wl, "X-Custom: FUZZ", "")
 	if err != nil {
 		t.Fatalf("AC-009: header fuzz failed: %v", err)
 	}

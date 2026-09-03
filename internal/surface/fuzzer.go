@@ -2,6 +2,7 @@ package surface
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,7 +10,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/nixteg/gofence/pkg/httpclient"
+	"golang.org/x/time/rate"
 )
 
 type FuzzResult struct {
@@ -17,11 +20,15 @@ type FuzzResult struct {
 	StatusCode int    `json:"status_code"`
 	Size       int64  `json:"size"`
 	Header     string `json:"header,omitempty"`
+	WAF        bool   `json:"waf,omitempty"`
 }
 
 type Fuzzer struct {
-	client      *httpclient.Client
-	Concurrency int
+	client       *httpclient.Client
+	Concurrency  int
+	WAF          *ux.WAFDetector
+	IgnoreStatus []int
+	Limiter      *rate.Limiter
 }
 
 func NewFuzzer(client *httpclient.Client, concurrency int) *Fuzzer {
@@ -31,7 +38,16 @@ func NewFuzzer(client *httpclient.Client, concurrency int) *Fuzzer {
 	return &Fuzzer{client: client, Concurrency: concurrency}
 }
 
-func (f *Fuzzer) FuzzWeb(targetURL, wordlistPath, headerName, postData string) (<-chan FuzzResult, error) {
+func (f *Fuzzer) ignore(code int) bool {
+	for _, s := range f.IgnoreStatus {
+		if s == code {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerName, postData string) (<-chan FuzzResult, error) {
 	file, err := os.Open(wordlistPath)
 	if err != nil {
 		return nil, fmt.Errorf("open wordlist: %w", err)
@@ -47,6 +63,11 @@ func (f *Fuzzer) FuzzWeb(targetURL, wordlistPath, headerName, postData string) (
 
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
+			// WAF wall: stop the wave and back off instead of hammering.
+			if f.WAF != nil && f.WAF.Triggered() {
+				fmt.Fprintf(os.Stderr, "WAF detected (%s): pausing fuzz wave\n", f.WAF.Signature())
+				break
+			}
 			word := strings.TrimSpace(scanner.Text())
 			if word == "" {
 				continue
@@ -58,6 +79,11 @@ func (f *Fuzzer) FuzzWeb(targetURL, wordlistPath, headerName, postData string) (
 				defer wg.Done()
 				defer func() { <-sem }()
 
+				if f.Limiter != nil {
+					if err := f.Limiter.Wait(ctx); err != nil {
+						return
+					}
+				}
 				res := f.doFuzz(targetURL, word, headerName, postData)
 				if res != nil {
 					results <- *res
@@ -100,11 +126,18 @@ func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResul
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 404 {
+	if resp.StatusCode == 404 || f.ignore(resp.StatusCode) {
 		return nil
 	}
 
 	body, _ := io.ReadAll(resp.Body)
+
+	if f.WAF != nil {
+		if detected, _ := f.WAF.Hit(resp.StatusCode, body); detected {
+			return &FuzzResult{URL: reqURL, StatusCode: resp.StatusCode, Size: int64(len(body)), WAF: true}
+		}
+	}
+
 	return &FuzzResult{
 		URL:        reqURL,
 		StatusCode: resp.StatusCode,

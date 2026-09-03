@@ -38,6 +38,14 @@ func (r *Resolver) BruteForce(domain, wordlistPath string) ([]DNSResult, error) 
 	}
 	defer file.Close()
 
+	// Wildcard detection: a random subdomain resolving to a stable IP means the
+	// zone has a catch-all. Every guessed name would then "resolve", producing
+	// 100% false positives against providers like Vercel.
+	wildcardIP := r.detectWildcard(domain)
+	if wildcardIP != "" {
+		fmt.Fprintf(os.Stderr, "WARN: wildcard DNS detected (catch-all -> %s); responses matching it will be discarded\n", wildcardIP)
+	}
+
 	sem := make(chan struct{}, r.Concurrency)
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -57,6 +65,9 @@ func (r *Resolver) BruteForce(domain, wordlistPath string) ([]DNSResult, error) 
 			defer wg.Done()
 			defer func() { <-sem }()
 			if ip := r.resolveA(sub); ip != "" {
+				if ip == wildcardIP {
+					return
+				}
 				atomic.AddInt64(&found, 1)
 				mu.Lock()
 				results = append(results, DNSResult{Subdomain: sub, IP: ip})
@@ -66,6 +77,11 @@ func (r *Resolver) BruteForce(domain, wordlistPath string) ([]DNSResult, error) 
 	}
 	wg.Wait()
 	return results, nil
+}
+
+func (r *Resolver) detectWildcard(domain string) string {
+	rnd := fmt.Sprintf("rnd-%d.%s", time.Now().UnixNano(), domain)
+	return r.resolveA(rnd)
 }
 
 func (r *Resolver) resolveA(name string) string {

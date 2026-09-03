@@ -1,0 +1,9 @@
+id: exposed-aws-credentials
+name: Exposed AWS credentials file
+requests:
+  - method: GET
+    path: /.aws/credentials
+matchers:
+  - type: regex
+    part: body
+    regex: "aws_access_key_id\\s*=\\s*AKIA[0-9A-Z]{16}"

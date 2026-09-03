@@ -38,6 +38,17 @@ var portCmd = &cobra.Command{
 		for _, r := range results {
 			fmt.Printf("%d/%s %s\n", r.Port, r.State, r.Service)
 		}
+
+		db, wsID := openWorkspace()
+		if db != nil {
+			hostID, err := db.HostUpsert(wsID, target, target)
+			if err == nil {
+				for _, r := range results {
+					_ = db.PortUpsert(hostID, r.Port, r.Service, r.State)
+				}
+			}
+			db.Close()
+		}
 		return nil
 	},
 }

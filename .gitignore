@@ -1,0 +1,6 @@
+gofence.db
+*.db-wal
+*.db-shm
+*.db-journal
+/tmp/
+coverage.out

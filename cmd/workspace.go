@@ -55,7 +55,7 @@ var workspaceList = &cobra.Command{
 }
 
 var workspaceScope = &cobra.Command{
-	Use:   "scope <workspace-id> <cidr>",
+	Use:   "scope <workspace-id|name> <cidr>",
 	Short: "Add CIDR to workspace scope",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -65,8 +65,10 @@ var workspaceScope = &cobra.Command{
 		}
 		defer db.Close()
 
-		var wsID int64
-		fmt.Sscanf(args[0], "%d", &wsID)
+		wsID, err := resolveWorkspaceID(db, args[0])
+		if err != nil {
+			return err
+		}
 		if err := db.ScopeAdd(wsID, args[1], "allowed"); err != nil {
 			return err
 		}
@@ -75,12 +77,44 @@ var workspaceScope = &cobra.Command{
 	},
 }
 
+var workspaceSetActive = &cobra.Command{
+	Use:   "set-active <nome>",
+	Short: "Mark a workspace as the active one for scans",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		db, err := openDB()
+		if err != nil {
+			return err
+		}
+		defer db.Close()
+		if _, err := db.WorkspaceByName(args[0]); err != nil {
+			return fmt.Errorf("workspace not found: %s", args[0])
+		}
+		if err := db.KVSet("active_workspace", args[0]); err != nil {
+			return err
+		}
+		fmt.Printf("Active workspace set to: %s\n", args[0])
+		return nil
+	},
+}
+
+func resolveWorkspaceID(db *data.DB, ref string) (int64, error) {
+	var id int64
+	if _, err := fmt.Sscanf(ref, "%d", &id); err == nil && id > 0 {
+		return id, nil
+	}
+	return db.WorkspaceByName(ref)
+}
+
 func openDB() (*data.DB, error) {
-	cfg := config.Get()
-	return data.New(cfg.DBPath)
+	path := dbPath
+	if path == "" {
+		path = config.Get().DBPath
+	}
+	return data.New(path)
 }
 
 func init() {
-	workspaceCmd.AddCommand(workspaceNew, workspaceList, workspaceScope)
+	workspaceCmd.AddCommand(workspaceNew, workspaceList, workspaceScope, workspaceSetActive)
 	rootCmd.AddCommand(workspaceCmd)
 }

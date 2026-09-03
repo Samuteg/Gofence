@@ -64,17 +64,11 @@ requests:
 // @spec:AC-015 — matcher logic
 func TestMatcherLogic(t *testing.T) {
 	engine := NewVulnEngine(httpclient.NewFromEnv())
-	m := struct {
-		Type   string `yaml:"type"`
-		Part   string `yaml:"part"`
-		Regex  string `yaml:"regex"`
-		Status int    `yaml:"status"`
-		Words  string `yaml:"words"`
-	}{Type: "status", Status: 200}
-	if !engine.match(m, 200, "") {
+	m := VulnMatcher{Type: "status", Status: 200}
+	if !engine.match(m, 200, "", "") {
 		t.Errorf("AC-015: status matcher should match 200")
 	}
-	if engine.match(m, 404, "") {
+	if engine.match(m, 404, "", "") {
 		t.Errorf("AC-015: status matcher should not match 404")
 	}
 }

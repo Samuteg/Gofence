@@ -3,16 +3,49 @@ package data
 import (
 	"database/sql"
 	"fmt"
+	"net"
+	"os"
+	"path/filepath"
 	"time"
 
 	_ "modernc.org/sqlite"
 )
+
+// ResolveIP returns the first IPv4 for host, best-effort (empty on failure).
+func ResolveIP(host string) string {
+	host = stripPort(host)
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return ""
+	}
+	for _, ip := range ips {
+		if v4 := ip.To4(); v4 != nil {
+			return v4.String()
+		}
+	}
+	if len(ips) > 0 {
+		return ips[0].String()
+	}
+	return ""
+}
+
+func stripPort(host string) string {
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		return h
+	}
+	return host
+}
 
 type DB struct {
 	Conn *sql.DB
 }
 
 func New(dbPath string) (*DB, error) {
+	if dir := filepath.Dir(dbPath); dir != "" && dir != "." {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return nil, fmt.Errorf("create db dir: %w", err)
+		}
+	}
 	conn, err := sql.Open("sqlite", dbPath+"?_pragma=journal_mode(WAL)&_pragma=busy_timeout(5000)")
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)
@@ -65,6 +98,10 @@ func (db *DB) migrate() error {
 			data TEXT,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (host_id) REFERENCES hosts(id)
+		)`,
+		`CREATE TABLE IF NOT EXISTS kv (
+			key TEXT PRIMARY KEY,
+			value TEXT NOT NULL
 		)`,
 	}
 	for _, q := range queries {
@@ -158,4 +195,102 @@ type Workspace struct {
 	ID        int64
 	Name      string
 	CreatedAt time.Time
+}
+
+func (db *DB) KVGet(key string) (string, error) {
+	var v string
+	err := db.Conn.QueryRow("SELECT value FROM kv WHERE key = ?", key).Scan(&v)
+	if err == sql.ErrNoRows {
+		return "", nil
+	}
+	return v, err
+}
+
+func (db *DB) KVSet(key, value string) error {
+	_, err := db.Conn.Exec(
+		"INSERT INTO kv (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+		key, value,
+	)
+	return err
+}
+
+func (db *DB) WorkspaceByName(name string) (int64, error) {
+	var id int64
+	err := db.Conn.QueryRow("SELECT id FROM workspaces WHERE name = ? AND deleted_at IS NULL", name).Scan(&id)
+	return id, err
+}
+
+// ActiveWorkspace resolves the workspace to persist findings into. An explicit
+// name wins; otherwise the active workspace stored via KVSet("active_workspace").
+func (db *DB) ActiveWorkspace(name string) (int64, error) {
+	if name != "" {
+		return db.WorkspaceByName(name)
+	}
+	active, _ := db.KVGet("active_workspace")
+	if active == "" {
+		return 0, fmt.Errorf("no active workspace; pass --workspace <name> or run 'gofence workspace set-active <name>'")
+	}
+	return db.WorkspaceByName(active)
+}
+
+func (db *DB) Hosts(workspaceID int64) ([]Host, error) {
+	rows, err := db.Conn.Query("SELECT id, workspace_id, ip, hostname FROM hosts WHERE workspace_id = ? ORDER BY ip", workspaceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var hosts []Host
+	for rows.Next() {
+		var h Host
+		if err := rows.Scan(&h.ID, &h.WorkspaceID, &h.IP, &h.Hostname); err != nil {
+			return nil, err
+		}
+		hosts = append(hosts, h)
+	}
+	return hosts, nil
+}
+
+func (db *DB) Ports(hostID int64) ([]Port, error) {
+	rows, err := db.Conn.Query("SELECT id, host_id, port, service, state FROM ports WHERE host_id = ? ORDER BY port", hostID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ports []Port
+	for rows.Next() {
+		var p Port
+		if err := rows.Scan(&p.ID, &p.HostID, &p.Port, &p.Service, &p.State); err != nil {
+			return nil, err
+		}
+		ports = append(ports, p)
+	}
+	return ports, nil
+}
+
+func (db *DB) Findings(workspaceID int64) ([]Finding, error) {
+	rows, err := db.Conn.Query(
+		"SELECT f.id, f.host_id, f.severity, f.title, f.data FROM findings f JOIN hosts h ON h.id = f.host_id WHERE h.workspace_id = ? ORDER BY f.severity, f.id",
+		workspaceID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var findings []Finding
+	for rows.Next() {
+		var f Finding
+		if err := rows.Scan(&f.ID, &f.HostID, &f.Severity, &f.Title, &f.Data); err != nil {
+			return nil, err
+		}
+		findings = append(findings, f)
+	}
+	return findings, nil
+}
+
+func (db *DB) SaveFinding(workspaceID int64, ip, hostname, severity, title, data string) error {
+	hostID, err := db.HostUpsert(workspaceID, ip, hostname)
+	if err != nil {
+		return err
+	}
+	return db.FindingCreate(hostID, severity, title, data)
 }

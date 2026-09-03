@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -18,8 +20,8 @@ type OSINTResult struct {
 }
 
 type OSINTClient struct {
-	client  *httpclient.Client
-	cfg     *config.Config
+	client *httpclient.Client
+	cfg    *config.Config
 }
 
 func NewOSINTClient(c *httpclient.Client, cfg *config.Config) *OSINTClient {
@@ -34,9 +36,16 @@ func (o *OSINTClient) Query(target, provider string) ([]OSINTResult, error) {
 		return o.queryCensys(target)
 	case "securitytrails":
 		return o.querySecurityTrails(target)
+	case "crtsh":
+		return o.queryCRTSh(target)
+	case "hackertarget":
+		return o.queryHackerTarget(target)
+	case "whois":
+		return o.queryWhois(target)
 	case "all":
 		var all []OSINTResult
-		for _, p := range []string{"shodan", "censys", "securitytrails"} {
+		// Keyless providers first so OSINT works with no API keys configured.
+		for _, p := range []string{"crtsh", "hackertarget", "whois", "shodan", "censys", "securitytrails"} {
 			res, err := o.queryByProvider(p, target)
 			if err != nil {
 				continue
@@ -57,8 +66,82 @@ func (o *OSINTClient) queryByProvider(p, target string) ([]OSINTResult, error) {
 		return o.queryCensys(target)
 	case "securitytrails":
 		return o.querySecurityTrails(target)
+	case "crtsh":
+		return o.queryCRTSh(target)
+	case "hackertarget":
+		return o.queryHackerTarget(target)
+	case "whois":
+		return o.queryWhois(target)
 	}
 	return nil, nil
+}
+
+func (o *OSINTClient) queryCRTSh(target string) ([]OSINTResult, error) {
+	url := fmt.Sprintf("https://crt.sh/?q=%s&output=json", target)
+	body, err := o.doRequest(url, "")
+	if err != nil {
+		return nil, err
+	}
+	var data []map[string]interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		return nil, err
+	}
+	return []OSINTResult{{Provider: "crtsh", Data: map[string]interface{}{"certificates": data}}}, nil
+}
+
+func (o *OSINTClient) queryHackerTarget(target string) ([]OSINTResult, error) {
+	url := fmt.Sprintf("https://api.hackertarget.com/hostsearch/?q=%s", target)
+	body, err := o.doRequest(url, "")
+	if err != nil {
+		return nil, err
+	}
+	lines := strings.Split(strings.TrimSpace(string(body)), "\n")
+	var hosts []string
+	for _, l := range lines {
+		if l != "" {
+			hosts = append(hosts, l)
+		}
+	}
+	return []OSINTResult{{Provider: "hackertarget", Data: map[string]interface{}{"hosts": hosts}}}, nil
+}
+
+func (o *OSINTClient) queryWhois(target string) ([]OSINTResult, error) {
+	raw, err := whoisQuery(target)
+	if err != nil {
+		return nil, err
+	}
+	return []OSINTResult{{Provider: "whois", Data: map[string]interface{}{"raw": raw}}}, nil
+}
+
+var whoisServerRe = regexp.MustCompile(`(?i)whois:\s*(\S+)`)
+
+func whoisQuery(query string) (string, error) {
+	first, err := rawWhois("whois.iana.org:43", query)
+	if err != nil {
+		return "", err
+	}
+	if m := whoisServerRe.FindStringSubmatch(first); len(m) > 1 {
+		if second, err := rawWhois(m[1]+":43", query); err == nil {
+			return second, nil
+		}
+	}
+	return first, nil
+}
+
+func rawWhois(server, query string) (string, error) {
+	conn, err := net.DialTimeout("tcp", server, 10*time.Second)
+	if err != nil {
+		return "", err
+	}
+	defer conn.Close()
+	if _, err := fmt.Fprintf(conn, "%s\r\n", query); err != nil {
+		return "", err
+	}
+	buf, err := io.ReadAll(conn)
+	if err != nil {
+		return "", err
+	}
+	return string(buf), nil
 }
 
 func (o *OSINTClient) doRequest(url, apiKey string) ([]byte, error) {

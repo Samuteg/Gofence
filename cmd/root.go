@@ -10,12 +10,13 @@ import (
 )
 
 var (
-	cfgFile   string
-	noTUI     bool
-	jsonOut   bool
-	rateProf  string
-	concur    int
-	dbPath    string
+	cfgFile       string
+	noTUI         bool
+	jsonOut       bool
+	rateProf      string
+	concur        int
+	dbPath        string
+	workspaceName string
 )
 
 var rootCmd = &cobra.Command{
@@ -46,6 +47,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&rateProf, "rate", "normal", "rate limit profile: sneaky|normal|aggressive")
 	rootCmd.PersistentFlags().IntVar(&concur, "concurrency", 100, "max concurrent goroutines")
 	rootCmd.PersistentFlags().StringVar(&dbPath, "db", defaultDB, "sqlite database path")
+	rootCmd.PersistentFlags().StringVar(&workspaceName, "workspace", "", "active workspace name (overrides stored active workspace)")
 }
 
 func isatty(f *os.File) bool {

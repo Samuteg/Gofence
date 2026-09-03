@@ -1,6 +1,7 @@
 package surface
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/url"
@@ -9,8 +10,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/nixteg/gofence/pkg/httpclient"
 	"golang.org/x/net/html"
+	"golang.org/x/time/rate"
 )
 
 type CrawlResult struct {
@@ -25,16 +28,18 @@ type Secret struct {
 }
 
 var (
-	jwtRegex      = regexp.MustCompile(`eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+`)
-	awsKeyRegex   = regexp.MustCompile(`AKIA[0-9A-Z]{16}`)
+	jwtRegex       = regexp.MustCompile(`eyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+`)
+	awsKeyRegex    = regexp.MustCompile(`AKIA[0-9A-Z]{16}`)
 	awsSecretRegex = regexp.MustCompile(`(?i)aws_secret_access_key\s*=\s*['"]?[A-Za-z0-9/+=]{40}`)
-	apiKeyRegex   = regexp.MustCompile(`(?i)(api[_-]?key|secret|token|password)\s*[=:]\s*['"]?[A-Za-z0-9_\-]{20,}`)
+	apiKeyRegex    = regexp.MustCompile(`(?i)(api[_-]?key|secret|token|password)\s*[=:]\s*['"]?[A-Za-z0-9_\-]{20,}`)
 )
 
 type Crawler struct {
 	client      *httpclient.Client
 	MaxDepth    int
 	Concurrency int
+	WAF         *ux.WAFDetector
+	Limiter     *rate.Limiter
 	visited     sync.Map
 	urls        []string
 	secrets     []Secret
@@ -68,6 +73,14 @@ func (c *Crawler) crawlLevel(targetURL string, depth int, base *url.URL) {
 	if _, loaded := c.visited.LoadOrStore(targetURL, true); loaded {
 		return
 	}
+	if c.WAF != nil && c.WAF.Triggered() {
+		return
+	}
+	if c.Limiter != nil {
+		if err := c.Limiter.Wait(context.Background()); err != nil {
+			return
+		}
+	}
 
 	resp, err := c.client.HTTP.Get(targetURL)
 	if err != nil {
@@ -76,6 +89,14 @@ func (c *Crawler) crawlLevel(targetURL string, depth int, base *url.URL) {
 	defer resp.Body.Close()
 
 	body, _ := io.ReadAll(resp.Body)
+
+	if c.WAF != nil {
+		if detected, _ := c.WAF.Hit(resp.StatusCode, body); detected {
+			fmt.Fprintf(os.Stderr, "WAF detected (%s) on %s: skipping\n", c.WAF.Signature(), targetURL)
+			return
+		}
+	}
+
 	c.extractSecrets(targetURL, string(body))
 
 	doc, err := html.Parse(strings.NewReader(string(body)))

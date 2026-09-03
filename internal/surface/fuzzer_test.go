@@ -1,6 +1,7 @@
 package surface
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -29,7 +30,7 @@ func TestFuzzerPath(t *testing.T) {
 	os.WriteFile(wl, []byte("admin\nfoo\nbar\n"), 0644)
 
 	fuzzer := NewFuzzer(httpclient.NewFromEnv(), 5)
-	results, err := fuzzer.FuzzWeb(server.URL+"/FUZZ", wl, "", "")
+	results, err := fuzzer.FuzzWeb(context.Background(), server.URL+"/FUZZ", wl, "", "")
 	if err != nil {
 		t.Fatalf("AC-008: fuzz failed: %v", err)
 	}
