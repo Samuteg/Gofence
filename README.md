@@ -1,9 +1,10 @@
 # gofence
 
 Ferramenta CLI de segurança ofensiva (pentest) escrita em Go — binário único,
-statically linked, focada em reconhecimento, mapeamento de superfície e
+pure Go (sem CGO), focada em reconhecimento, mapeamento de superfície e
 exploração. Arquitetura modular em 5 pilares, com armazenamento local em
-SQLite e modos interativo (TUI) e headless (pipeline UNIX).
+SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
+(pipeline UNIX) e persistência de achados por workspace.
 
 > ⚠️ **Uso autorizado apenas.** Esta ferramenta destina-se a testes de intrusão
 > com autorização explícita (escopo contratado). O módulo de ScopeGuard bloqueia
@@ -73,9 +74,10 @@ CGO_ENABLED=0 go build -ldflags '-s -w' -o gofence .
 | `gofence crawl <url>` | Crawler AST com detecção de segredos |
 | `gofence vulns <alvo>` | Executa templates de vulnerabilidade (formato Nuclei) |
 | `gofence payload` | Gera payloads de reverse/bind shell |
-| `gofence listen` | Multi-handler para conexões reversas |
-| `gofence brute <serviço>` | Brute force de dicionário (ssh/http/ftp) |
-| `gofence workspace` | Gerencia workspaces e escopo |
+| `gofence listen [porta]` | Multi-handler para conexões reversas |
+| `gofence brute <ssh\|http\|ftp>` | Brute force de dicionário (ssh/http/ftp) |
+| `gofence workspace` | Gerencia workspaces, escopo e workspace ativo |
+| `gofence report` | Agrega hosts/ports/findings do workspace em Markdown/JSON |
 
 ---
 
@@ -91,6 +93,7 @@ Aplicam-se a todos os comandos (definidas no root):
 | `--rate <perfil>` | `normal` | Perfil de rate limit: `sneaky`\|`normal`\|`aggressive` |
 | `--concurrency <n>` | `100` | Máximo de goroutines simultâneas |
 | `--db <caminho>` | `~/.gofence/gofence.db` | Caminho do banco SQLite |
+| `--workspace <nome>` | _(workspace ativo salvo)_ | Workspace para persistência (sobrescreve o ativo) |
 
 **Ordem de precedência da configuração:**
 `flags CLI` > `env GOFENCE_*` > `~/.gofence/config.yaml` > padrões.
@@ -131,7 +134,10 @@ export GOFENCE_SECURITYTRAILS_KEY="..."
 ### `dns` — Descoberta de subdomínios
 
 ```bash
-# Brute-force de subdomínios com wordlist
+# Brute-force com wordlist embutida (sem -w usa subdomains.txt interno)
+gofence dns alvo.com
+
+# Brute-force de subdomínios com wordlist própria
 gofence dns alvo.com -w /caminho/wordlist.txt
 
 # Limitar concorrência
@@ -141,7 +147,9 @@ gofence dns alvo.com -w wordlist.txt --concurrency 500
 gofence dns alvo.com --axfr --nameserver ns1.alvo.com
 ```
 
-Saída (STDOUT, uma por linha): `subdominio IP`
+Saída (STDOUT, uma por linha): `subdominio IP`. AXFR imprime JSON.
+Quando há workspace ativo, os subdomínios são persistidos como findings
+(`info/subdomain`) e o total vai para o STDERR.
 
 ### `osint` — Inteligência de fontes externas
 
@@ -172,6 +180,8 @@ gofence port 10.0.0.5 --udp --top 100
 gofence port 10.0.0.0/24 --top 100
 ```
 
+Portas abertas são persistidas no workspace ativo (tabela `ports`).
+
 > Toda operação passa pelo **ScopeGuard** — IPs fora do escopo do workspace
 > são descartados com log `Out-of-Scope Blocked` no STDERR.
 
@@ -182,29 +192,40 @@ gofence port 10.0.0.0/24 --top 100
 ### `fuzz` — Fuzzer web de alta performance
 
 Lê a wordlist como **stream** (não carrega tudo na RAM — suporta wordlists
-gigantes).
+gigantes). Sem `-w`, usa a wordlist embutida `paths.txt`.
 
 ```bash
-# Fuzzing de caminhos
-gofence fuzz web https://alvo.com/FUZZ -w wordlist.txt
+# Fuzzing de caminhos (wordlist embutida)
+gofence fuzz https://alvo.com/FUZZ
+
+# Fuzzing de caminhos com wordlist própria
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt
 
 # Fuzzing de cabeçalho
-gofence fuzz web https://alvo.com/ -w hosts.txt --header "Host: FUZZ"
+gofence fuzz https://alvo.com/ -w hosts.txt --header "Host: FUZZ"
 
 # Fuzzing de dados POST
-gofence fuzz web https://alvo.com/login -w passwords.txt --data "user=admin&pass=FUZZ"
+gofence fuzz https://alvo.com/login -w passwords.txt --data "user=admin&pass=FUZZ"
+
+# Suprimir status codes ruidosos e desativar parada por WAF
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --ignore-status 403,429 --waf-backoff=false
 ```
 
 Imprime no STDOUT apenas respostas com status ≠ 404: `[status] url (size: N)`.
+Com `--waf-backoff` (padrão), ao detectar WAF a onda para e um aviso
+`WAF wall hit (...)` vai para o STDERR com sugestão de `--rate sneaky`.
+Achados são persistidos no workspace ativo (`info/fuzz <status>`).
 
 ### `tls` — Análise de certificado
 
 ```bash
 gofence tls alvo.com:443
-gofence tls 10.0.0.5:8443 --strict   # alerta se TLS < 1.2
+gofence tls alvo.com            # porta 443 implícita
+gofence tls 10.0.0.5:8443 --strict   # sonda protocolos legados e alerta se TLS < 1.2
 ```
 
 Saída JSON: subject, issuer, validade, fingerprint SHA-256, cifras, protocolos.
+O achado é persistido no workspace ativo (`info` ou `medium` se grade C).
 
 ### `crawl` — Crawler baseado em AST
 
@@ -215,12 +236,18 @@ gofence crawl https://alvo.com/ --depth 3
 - Extrai links (BFS até a profundidade configurada)
 - Detecta segredos (JWT, AWS keys, API keys) — alertas no **STDERR**
 - Ignora `robots.txt` (decisão deliberada para pentest)
+- Segredos são persistidos no workspace ativo (`high` para AWS_KEY/AWS_SECRET/JWT,
+  `medium` para os demais); respeita `--rate` e detector de WAF
 
 ### `vulns` — Templates de vulnerabilidade
 
-Formato compatível com **Nuclei** (YAML com `requests[]` e `matchers[]`):
+Formato compatível com **Nuclei** (YAML com `requests[]` e `matchers[]`).
+Sem `-t`, usa os templates embutidos (`exposed-aws.yaml`, `exposed-git.yaml`).
 
 ```bash
+# Templates embutidos
+gofence vulns https://alvo.com/
+
 # Template único
 gofence vulns https://alvo.com/ -t template.yaml
 
@@ -244,6 +271,9 @@ matchers:
 ```
 
 Matchers suportados: `status` | `regex` | `word`.
+
+Ao final imprime `SUMMARY: templates=N executed=N matched=N failed=N` no STDOUT.
+Matches são persistidos no workspace ativo como `high/vuln <id>`.
 
 ---
 
@@ -311,16 +341,41 @@ gofence workspace new "Cliente X"
 # Listar workspaces
 gofence workspace list
 
-# Adicionar CIDR permitido ao escopo
+# Marcar workspace como ativo para os scans
+gofence workspace set-active "Cliente X"
+
+# Adicionar CIDR permitido ao escopo (por id ou nome)
 gofence workspace scope 1 10.0.0.0/8
+gofence workspace scope "Cliente X" 10.0.0.0/8
 ```
 
 O **ScopeGuard** consulta a tabela `scope` do workspace ativo antes de qualquer
 operação de rede. IPs fora do CIDR permitido são bloqueados.
 
+O workspace ativo é resolvido nesta ordem: flag `--workspace <nome>` >
+valor salvo em KV (`workspace set-active`) — sem um dos dois, os comandos
+rodam sem persistir e avisam no STDERR (`findings not persisted`).
+
+### `report` — Relatório do workspace
+
+```bash
+# Markdown no STDOUT (workspace ativo)
+gofence report
+
+# JSON no STDOUT
+gofence report --format json
+
+# Escrever em arquivo, de outro banco / workspace
+gofence report --format md --out relatorio.md
+gofence --db /path/to/engajamento.db --workspace "Cliente X" report --format json
+```
+
+Agrega `hosts` + `ports` + `findings` do workspace ativo.
+
 ### Banco de dados (SQLite)
 
-Tabelas: `workspaces`, `scope`, `hosts`, `ports`, `findings`.
+Tabelas: `workspaces`, `scope`, `hosts`, `ports`, `findings`, `kv`
+(`kv` guarda `active_workspace`).
 Local padrão: `~/.gofence/gofence.db` (configurável via `--db`).
 
 ```bash
@@ -348,14 +403,15 @@ gofence --no-tui   # força headless
 ### Modo Headless / Pipeline
 
 STDOUT reservado para dados puros (JSON quando detectado não-TTY ou `--json`);
-STDERR para logs, barras de progresso e alertas.
+STDERR para logs, barras de progresso e alertas (inclui `persisted N ...`
+e avisos de WAF).
 
 ```bash
-# Pipe: DNS → Port → Fuzz
-gofence dns alvo.com -w sub.txt | gofence port | gofence fuzz web
+# Encadear via xargs (cada comando recebe o alvo por argumento)
+gofence dns alvo.com -w sub.txt | awk '{print $2}' | xargs -I{} gofence port {} --top 100
 
-# Integração com jq
-gofence dns alvo.com -w sub.txt --json | jq '.subdomains'
+# TLS sempre sai em JSON — bom para jq
+gofence tls alvo.com:443 | jq '.subject'
 ```
 
 ### Rate Limiting (evasão)
@@ -377,8 +433,8 @@ gofence --rate sneaky dns alvo.com -w wl.txt
 ### Reconhecimento completo de um alvo
 
 ```bash
-# 1. Descobrir subdomínios
-gofence dns alvo.com -w subdomains.txt -w /dev/stdin <<< "www api admin dev"
+# 1. Descobrir subdomínios (wordlist embutida se omitir -w)
+gofence dns alvo.com -w subdomains.txt
 
 # 2. Consultar OSINT
 gofence osint alvo.com --provider all
@@ -390,10 +446,14 @@ gofence port 10.0.0.0/24 --top 1000
 gofence tls alvo.com:443 --strict
 
 # 5. Fuzar diretórios
-gofence fuzz web https://alvo.com/FUZZ -w paths.txt
+gofence fuzz https://alvo.com/FUZZ -w paths.txt
 
-# 6. Rodar templates de vuln
+# 6. Rodar templates de vuln (embutidos se omitir -t)
 gofence vulns https://alvo.com/ -t ./nuclei-templates/
+
+# 7. Gerar relatório do workspace ativo
+gofence workspace set-active "Cliente X"
+gofence report --format md --out relatorio.md
 ```
 
 ### Setup de exploração (reverse shell)
@@ -414,13 +474,14 @@ gofence payload --type python --ip 10.0.0.1 --port 4444
 
 ```
 gofence/
-├── cmd/            # Comandos Cobra (entry points)
+├── cmd/            # Comandos Cobra (entry points) + helpers.go/report.go
 ├── internal/
+│   ├── assets/     # Wordlists e templates embutidos (go:embed)
 │   ├── recon/      # DNS, OSINT, port scan
 │   ├── surface/    # Fuzzer, TLS, crawler, vuln templates
 │   ├── exploit/    # Payloads, handler, brute force
 │   ├── data/       # SQLite, models, ScopeGuard
-│   ├── ux/         # TUI, headless, rate limiter
+│   ├── ux/         # TUI, headless, rate limiter, WAF detector
 │   └── config/     # Viper config
 ├── pkg/httpclient/ # Cliente HTTP customizado
 └── main.go
@@ -430,7 +491,12 @@ gofence/
 
 ```bash
 go test ./...
+go test ./internal/surface
+go test -v ./internal/surface -run TestFuzzer
 ```
+
+`go vet ./...` tem avisos conhecidos de formatação IPv6 em
+`internal/recon/portscan.go`.
 
 ### Auditoria da especificação (onp-spec)
 
@@ -460,4 +526,8 @@ node <dir-skill>/scripts/onp-spec.mjs audit --ci
 
 ## Licença
 
-Uso restrito a testes de segurança autorizados.
+GPL-3.0-or-later — veja o arquivo [LICENSE](./LICENSE).
+
+> ⚠️ **Uso autorizado apenas.** Independentemente da licença de código,
+> esta ferramenta destina-se a testes de intrusão com autorização
+> explícita (escopo contratado).
