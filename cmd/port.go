@@ -16,9 +16,19 @@ var (
 var portCmd = &cobra.Command{
 	Use:   "port <ip/cidr>",
 	Short: "TCP/UDP port scanner",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		target := args[0]
+		target, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
+		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, target, "port"); err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
 		scanner := recon.NewPortScanner(concur, 0)
 
 		var ports []int
@@ -39,7 +49,6 @@ var portCmd = &cobra.Command{
 			fmt.Printf("%d/%s %s\n", r.Port, r.State, r.Service)
 		}
 
-		db, wsID := openWorkspace()
 		if db != nil {
 			hostID, err := db.HostUpsert(wsID, target, target)
 			if err == nil {

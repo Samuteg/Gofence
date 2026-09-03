@@ -1,6 +1,6 @@
 {
-  "testCommand": "go test ./...",
-  "reporter": "exitcode",
+  "testCommand": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
   "testGlobs": ["**/*_test.go"],
   "srcGlobs": ["**/*.go"],
   "specDir": ".spec",

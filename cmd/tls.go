@@ -16,22 +16,33 @@ var tlsStrict bool
 var tlsCmd = &cobra.Command{
 	Use:   "tls <host:porta>",
 	Short: "TLS certificate and cipher analysis",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		host := args[0]
+		host, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
 		if !strings.Contains(host, ":") {
 			host = host + ":443"
 		}
 
+		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, host, "tls"); err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
+
 		info, err := surface.AnalyzeTLS(host, tlsStrict)
 		if err != nil {
+			db.Close()
 			return err
 		}
 
 		out, _ := json.MarshalIndent(info, "", "  ")
 		fmt.Println(string(out))
 
-		db, wsID := openWorkspace()
 		if db != nil {
 			hostname := strings.Split(host, ":")[0]
 			sev := "info"

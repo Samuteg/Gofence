@@ -114,7 +114,30 @@ func openDB() (*data.DB, error) {
 	return data.New(path)
 }
 
+var workspaceDelete = &cobra.Command{
+	Use:   "delete <workspace-id|nome>",
+	Short: "Soft-delete a workspace (keeps history for auditing)",
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		db, err := openDB()
+		if err != nil {
+			return err
+		}
+		defer db.Close()
+
+		wsID, err := resolveWorkspaceID(db, args[0])
+		if err != nil {
+			return fmt.Errorf("workspace not found: %s", args[0])
+		}
+		if err := db.WorkspaceDelete(wsID); err != nil {
+			return err
+		}
+		fmt.Printf("Workspace deleted: id=%d\n", wsID)
+		return nil
+	},
+}
+
 func init() {
-	workspaceCmd.AddCommand(workspaceNew, workspaceList, workspaceScope, workspaceSetActive)
+	workspaceCmd.AddCommand(workspaceNew, workspaceList, workspaceScope, workspaceSetActive, workspaceDelete)
 	rootCmd.AddCommand(workspaceCmd)
 }

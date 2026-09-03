@@ -124,6 +124,32 @@ func (db *DB) WorkspaceCreate(name string) (int64, error) {
 	return res.LastInsertId()
 }
 
+// WorkspaceDelete soft-deletes the workspace, keeping rows for auditing.
+// It clears the active-workspace marker when it references the deleted one.
+func (db *DB) WorkspaceDelete(id int64) error {
+	res, err := db.Conn.Exec(
+		"UPDATE workspaces SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL",
+		id,
+	)
+	if err != nil {
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n == 0 {
+		return fmt.Errorf("workspace not found: id=%d", id)
+	}
+	var name string
+	if err := db.Conn.QueryRow("SELECT name FROM workspaces WHERE id = ?", id).Scan(&name); err == nil {
+		if active, _ := db.KVGet("active_workspace"); active == name {
+			_, _ = db.Conn.Exec("DELETE FROM kv WHERE key = 'active_workspace'")
+		}
+	}
+	return nil
+}
+
 func (db *DB) WorkspaceList() ([]Workspace, error) {
 	rows, err := db.Conn.Query("SELECT id, name, created_at FROM workspaces WHERE deleted_at IS NULL")
 	if err != nil {

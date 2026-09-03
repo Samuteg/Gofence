@@ -14,9 +14,20 @@ var osintProvider string
 var osintCmd = &cobra.Command{
 	Use:   "osint <alvo>",
 	Short: "Query OSINT APIs (Shodan, Censys, SecurityTrails)",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		target := args[0]
+		target, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
+		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, target, "osint"); err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
+		db.Close()
 		cfg := config.Get()
 		client := httpclient.NewFromEnv()
 		osintClient := recon.NewOSINTClient(client, cfg)

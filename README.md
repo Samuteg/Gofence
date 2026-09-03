@@ -182,8 +182,9 @@ gofence port 10.0.0.0/24 --top 100
 
 Portas abertas são persistidas no workspace ativo (tabela `ports`).
 
-> Toda operação passa pelo **ScopeGuard** — IPs fora do escopo do workspace
-> são descartados com log `Out-of-Scope Blocked` no STDERR.
+> Toda operação passa pelo **ScopeGuard** (fail-closed) — sem workspace ativo
+> ou com alvo fora do escopo, o comando é recusado com log
+> `Out-of-Scope Blocked` no STDERR, sem enviar pacote à rede.
 
 ---
 
@@ -347,14 +348,18 @@ gofence workspace set-active "Cliente X"
 # Adicionar CIDR permitido ao escopo (por id ou nome)
 gofence workspace scope 1 10.0.0.0/8
 gofence workspace scope "Cliente X" 10.0.0.0/8
+
+# Encerrar workspace (soft delete: some do list, mantém histórico)
+gofence workspace delete "Cliente X"
 ```
 
-O **ScopeGuard** consulta a tabela `scope` do workspace ativo antes de qualquer
-operação de rede. IPs fora do CIDR permitido são bloqueados.
+O **ScopeGuard** é fail-closed: todo comando de rede exige workspace ativo
+com escopo cadastrado. Sem workspace, com escopo vazio ou com alvo fora dos
+CIDRs, o comando recusa com erro — alvos fora do escopo geram log
+`Out-of-Scope Blocked` no STDERR sem nenhum pacote enviado.
 
 O workspace ativo é resolvido nesta ordem: flag `--workspace <nome>` >
-valor salvo em KV (`workspace set-active`) — sem um dos dois, os comandos
-rodam sem persistir e avisam no STDERR (`findings not persisted`).
+valor salvo em KV (`workspace set-active`).
 
 ### `report` — Relatório do workspace
 
@@ -406,9 +411,15 @@ STDOUT reservado para dados puros (JSON quando detectado não-TTY ou `--json`);
 STDERR para logs, barras de progresso e alertas (inclui `persisted N ...`
 e avisos de WAF).
 
+Comandos com alvo (`dns`, `osint`, `port`, `fuzz`, `tls`, `crawl`, `vulns`,
+`brute`) aceitam o alvo via pipe quando o argumento é omitido: vale a
+primeira linha do stdin (primeiro campo), e linhas extras geram aviso no
+STDERR. O argumento explícito tem prioridade; sem nenhum dos dois, o comando
+pede o alvo e sai com erro. A checagem de escopo vale para alvos do pipe.
+
 ```bash
-# Encadear via xargs (cada comando recebe o alvo por argumento)
-gofence dns alvo.com -w sub.txt | awk '{print $2}' | xargs -I{} gofence port {} --top 100
+# Pipe direto: DNS → Port (primeiro alvo do stdin)
+gofence dns alvo.com -w sub.txt | gofence port --top 100
 
 # TLS sempre sai em JSON — bom para jq
 gofence tls alvo.com:443 | jq '.subject'
@@ -433,6 +444,11 @@ gofence --rate sneaky dns alvo.com -w wl.txt
 ### Reconhecimento completo de um alvo
 
 ```bash
+# 0. Preparar workspace e escopo (obrigatório: comandos de rede recusam sem isso)
+gofence workspace new "Cliente X"
+gofence workspace scope "Cliente X" 10.0.0.0/8
+gofence workspace set-active "Cliente X"
+
 # 1. Descobrir subdomínios (wordlist embutida se omitir -w)
 gofence dns alvo.com -w subdomains.txt
 
@@ -500,8 +516,9 @@ go test -v ./internal/surface -run TestFuzzer
 
 ### Auditoria da especificação (onp-spec)
 
-Este projeto usa o fluxo **onp-spec** (spec-anchored). A especificação vive em
-`.spec/features/gofence-cli/` e é auditada mecanicamente contra o código:
+Este projeto usa o fluxo **onp-spec** (spec-anchored). As especificações vivem em
+`.spec/features/` (`gofence-cli`, `scope-enforcement`, `pipeline-stdin`,
+`workspace-delete`) e são auditadas mecanicamente contra o código:
 
 ```bash
 # Rodar os testes e gravar prova por critério de aceite

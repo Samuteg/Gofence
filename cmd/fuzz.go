@@ -26,9 +26,12 @@ var (
 var fuzzCmd = &cobra.Command{
 	Use:   "fuzz <url>",
 	Short: "Web fuzzer for paths, headers, and POST data",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		targetURL := args[0]
+		targetURL, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
 		if fuzzWordlist == "" {
 			if assets.HasWordlist("paths.txt") {
 				words, werr := assets.Wordlist("paths.txt")
@@ -58,12 +61,20 @@ var fuzzCmd = &cobra.Command{
 			fuzzer.WAF = waf
 		}
 
-		results, err := fuzzer.FuzzWeb(context.Background(), targetURL, fuzzWordlist, fuzzHeader, fuzzPost)
-		if err != nil {
+		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, hostOf(targetURL), "fuzz"); err != nil {
+			if db != nil {
+				db.Close()
+			}
 			return err
 		}
 
-		db, wsID := openWorkspace()
+		results, err := fuzzer.FuzzWeb(context.Background(), targetURL, fuzzWordlist, fuzzHeader, fuzzPost)
+		if err != nil {
+			db.Close()
+			return err
+		}
+
 		var persisted int
 		for r := range results {
 			if r.WAF {

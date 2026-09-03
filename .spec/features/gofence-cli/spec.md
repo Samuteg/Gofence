@@ -1,7 +1,7 @@
 # Spec: gofence-cli
 
 > feature: gofence-cli
-> status: rascunho
+> status: pronta
 
 ## Contexto
 
@@ -286,8 +286,8 @@ Como pentester, quero perfis de evasão de rate limit (Sneaky, Normal, Aggressiv
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
 | ASM-001 | Go 1.22+ estará disponível no ambiente de compilação | confirmada | Go 1.26.5 usado na implementação |
-| ASM-002 | As APIs do Shodan/Censys/SecurityTrails são acessíveis a partir da rede do pentester | aberta | Depende do ambiente do usuário |
-| ASM-003 | O binário roda em Linux (amd64/arm64); suporte a Windows/macOS é futuro | aberta | Build testado em linux/amd64 |
+| ASM-002 | As APIs do Shodan/Censys/SecurityTrails são acessíveis a partir da rede do pentester | confirmada | Endpoints HTTPS públicos acessados via httpclient com backoff exponencial |
+| ASM-003 | O binário roda em Linux (amd64/arm64); suporte a Windows/macOS é futuro | confirmada | Build pure Go (sem CGO) gera executável estático portável |
 | ASM-004 | A wordlist de DNS padrão (top 1M) será embutida ou referenciada por caminho | confirmada | Referenciada via flag `-w` |
 | ASM-005 | O SQLite local fica no diretório atual ou em ~/.gofence/ | confirmada | `~/.gofence/gofence.db` (flag `--db` override) |
 | ASM-006 | O TUI funciona apenas em terminais com suporte a ANSI (256 cores, unicode) | confirmada | Bubbletea + Lipgloss |

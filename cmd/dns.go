@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/nixteg/gofence/internal/assets"
+	"github.com/nixteg/gofence/internal/data"
 	"github.com/nixteg/gofence/internal/recon"
 	"github.com/spf13/cobra"
 )
@@ -19,15 +20,35 @@ var (
 var dnsCmd = &cobra.Command{
 	Use:   "dns <alvo>",
 	Short: "DNS brute-force and zone transfer",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		domain := args[0]
+		domain, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
 		resolver := recon.NewResolver(concur)
+
+		db, wsID := openWorkspace()
+		guard, err := mustScope(db, wsID)
+		if err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
+		if !data.CheckHost(guard, domain, "dns") {
+			db.Close()
+			return fmt.Errorf("target %s is out of scope", domain)
+		}
 
 		if dnsAXFR {
 			ns := dnsNS
 			if ns == "" {
 				ns = "8.8.8.8"
+			}
+			if !data.CheckHost(guard, ns, "axfr") {
+				db.Close()
+				return fmt.Errorf("target %s is out of scope", ns)
 			}
 			records, err := resolver.AXFR(domain, ns)
 			if err != nil {
@@ -61,21 +82,19 @@ var dnsCmd = &cobra.Command{
 			return fmt.Errorf("bruteforce: %w", err)
 		}
 
-		db, wsID := openWorkspace()
 		var persisted int
 		for _, r := range results {
+			if !data.CheckHost(guard, r.IP, "dns") {
+				continue
+			}
 			fmt.Printf("%s %s\n", r.Subdomain, r.IP)
-			if db != nil {
-				if err := db.SaveFinding(wsID, r.IP, r.Subdomain, "info",
-					"subdomain", fmt.Sprintf("domain=%s", domain)); err == nil {
-					persisted++
-				}
+			if err := db.SaveFinding(wsID, r.IP, r.Subdomain, "info",
+				"subdomain", fmt.Sprintf("domain=%s", domain)); err == nil {
+				persisted++
 			}
 		}
-		if db != nil {
-			fmt.Fprintf(os.Stderr, "persisted %d subdomains to workspace\n", persisted)
-			db.Close()
-		}
+		fmt.Fprintf(os.Stderr, "persisted %d subdomains to workspace\n", persisted)
+		db.Close()
 		return nil
 	},
 }

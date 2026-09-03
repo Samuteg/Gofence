@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -55,5 +56,54 @@ func TestPipeInput(t *testing.T) {
 	}
 	if len(lines) != 2 {
 		t.Errorf("AC-031: expected 2 lines from pipe, got %d", len(lines))
+	}
+}
+
+// @spec:AC-040 — sem argumento, o alvo vem da primeira linha do stdin
+func TestResolveTargetUsesFirstLine(t *testing.T) {
+	target, rest, err := ResolveTarget(nil, strings.NewReader("10.0.0.1\n10.0.0.2\n"), true)
+	if err != nil {
+		t.Fatalf("AC-040: unexpected error: %v", err)
+	}
+	if target != "10.0.0.1" {
+		t.Errorf("AC-040: expected first line as target, got %q", target)
+	}
+	if rest != 1 {
+		t.Errorf("AC-040: expected 1 ignored line, got %d", rest)
+	}
+}
+
+// @spec:AC-040 — vale o primeiro campo da linha (saída `sub IP` do dns)
+func TestResolveTargetUsesFirstField(t *testing.T) {
+	target, _, err := ResolveTarget(nil, strings.NewReader("www.alvo.com 10.0.0.1\n"), true)
+	if err != nil {
+		t.Fatalf("AC-040: unexpected error: %v", err)
+	}
+	if target != "www.alvo.com" {
+		t.Errorf("AC-040: expected first field as target, got %q", target)
+	}
+}
+
+// @spec:AC-041 — sem argumento e sem pipe, erro de uso
+func TestResolveTargetRequiresArgOrPipe(t *testing.T) {
+	if _, _, err := ResolveTarget(nil, strings.NewReader(""), false); err == nil {
+		t.Errorf("AC-041: expected error without arg and without pipe, got nil")
+	}
+	if _, _, err := ResolveTarget(nil, strings.NewReader("  \n"), true); err == nil {
+		t.Errorf("AC-041: expected error with empty piped stdin, got nil")
+	}
+}
+
+// @spec:AC-042 — argumento explícito tem prioridade sobre o pipe
+func TestResolveTargetArgWins(t *testing.T) {
+	target, rest, err := ResolveTarget([]string{"10.9.9.9"}, strings.NewReader("10.0.0.1\n"), true)
+	if err != nil {
+		t.Fatalf("AC-042: unexpected error: %v", err)
+	}
+	if target != "10.9.9.9" {
+		t.Errorf("AC-042: expected explicit arg as target, got %q", target)
+	}
+	if rest != 0 {
+		t.Errorf("AC-042: expected 0 ignored lines, got %d", rest)
 	}
 }

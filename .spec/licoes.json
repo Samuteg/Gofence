@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "proximoId": 3,
+  "licoes": [
+    {
+      "id": "L-001",
+      "texto": "Escrever o teste anotado @spec junto de cada critério de aceite, antes de implementar — nunca depois do audit acusar",
+      "chave": "AC_SEM_TESTE::escrever o teste anotado spec junto de cada criterio de aceite antes de implementar nunca depois do audit acusar",
+      "sinal": "AC_SEM_TESTE",
+      "escopo": null,
+      "status": "candidata",
+      "recorrencia": 1,
+      "features": [
+        "scope-enforcement"
+      ],
+      "evidencias": [
+        {
+          "fonte": "AC-035",
+          "feature": "scope-enforcement",
+          "quando": "2026-09-03T01:28:21.965Z",
+          "gitRev": "a7078ab"
+        }
+      ],
+      "penalidades": 0,
+      "criadaEm": "2026-09-03T01:28:21.965Z",
+      "ultimaVez": "2026-09-03T01:28:21.965Z"
+    },
+    {
+      "id": "L-002",
+      "texto": "Conferir cada caminho de Arquivos: contra a árvore real antes de marcar a tarefa como concluída — glob e arquivo movido quebram o audit",
+      "chave": "ARQUIVO_INEXISTENTE::conferir cada caminho de arquivos contra a arvore real antes de marcar a tarefa como concluida glob e arquivo movido quebram o audit",
+      "sinal": "ARQUIVO_INEXISTENTE",
+      "escopo": null,
+      "status": "candidata",
+      "recorrencia": 1,
+      "features": [
+        "gofence-cli"
+      ],
+      "evidencias": [
+        {
+          "fonte": "T-005",
+          "feature": "gofence-cli",
+          "quando": "2026-09-03T01:28:28.520Z",
+          "gitRev": "a7078ab"
+        }
+      ],
+      "penalidades": 0,
+      "criadaEm": "2026-09-03T01:28:28.520Z",
+      "ultimaVez": "2026-09-03T01:28:28.520Z"
+    }
+  ]
+}

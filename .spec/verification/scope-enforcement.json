@@ -1,0 +1,37 @@
+{
+  "feature": "scope-enforcement",
+  "timestamp": "2026-09-03T01:28:06.797Z",
+  "gitRev": "a7078ab",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 57,
+  "results": {
+    "AC-035": {
+      "status": "pass",
+      "testName": "@spec:AC-035 TestCheckHostBlocksOutOfScope (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
+    },
+    "AC-036": {
+      "status": "pass",
+      "testName": "@spec:AC-036 TestRequireScopeInScope (github.com/nixteg/gofence/cmd)",
+      "method": "tap"
+    },
+    "AC-037": {
+      "status": "pass",
+      "testName": "@spec:AC-037 TestRequireScopeNoWorkspace (github.com/nixteg/gofence/cmd)",
+      "method": "tap"
+    },
+    "AC-038": {
+      "status": "pass",
+      "testName": "@spec:AC-038 TestRequireScopeEmptyScope (github.com/nixteg/gofence/cmd)",
+      "method": "tap"
+    },
+    "AC-039": {
+      "status": "pass",
+      "testName": "@spec:AC-039 TestFilterAllowedKeepsInScopeOnly (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}

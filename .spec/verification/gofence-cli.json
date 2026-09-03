@@ -1,181 +1,181 @@
 {
   "feature": "gofence-cli",
-  "timestamp": "2026-08-29T02:22:55.726Z",
-  "gitRev": "5d45f01",
-  "command": "go test ./...",
-  "reporter": "exitcode",
+  "timestamp": "2026-09-03T01:28:05.081Z",
+  "gitRev": "a7078ab",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 0,
+  "testsParsed": 57,
   "results": {
     "AC-001": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-001 TestBruteForceStructure (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-002": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-002 TestAXFRStructure (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-003": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-003 TestResolverConcurrencyDefault (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-004": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-004 TestOSINTShodanQuery (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-005": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-005 TestOSINTQueryRouting (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-006": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-006 TestPortScanLocal (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-007": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-007 TestScanUDP (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-008": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-008 TestFuzzerPath (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-009": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-009 TestFuzzerHeader (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-010": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-010 TestFuzzerStreamDoesNotLoadAll (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
     },
     "AC-011": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-011 TestAnalyzeTLS (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-012": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-012 TestTLSDowngradeDetection (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-013": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-013 TestCrawlerExtractsLinks (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-014": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-014 TestCrawlerDetectsSecrets (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-015": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-015 TestMatcherLogic (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-016": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-016 TestLoadTemplateDir (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
     },
     "AC-017": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-017 TestPayloadReverseBash (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-018": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-018 TestPayloadPython (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-019": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-019 TestMultiHandlerListen (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-020": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-020 TestMultiHandlerSessions (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-021": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-021 TestBruteSSH (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-022": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-022 TestBruteHTTPLogic (github.com/nixteg/gofence/internal/exploit)",
+      "method": "tap"
     },
     "AC-023": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-023 TestWorkspaceCreate (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
     },
     "AC-024": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-024 TestHostUpsert (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
     },
     "AC-025": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-025 TestFindingCreate (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
     },
     "AC-026": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-026 TestScopeGuardBlocksOutOfScope (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
     },
     "AC-027": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-027 TestScopeGuardAllowsInScope (github.com/nixteg/gofence/internal/data)",
+      "method": "tap"
     },
     "AC-028": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-028 TestTUIRuns (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-029": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-029 TestTUIUpdatePanels (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-030": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-030 TestOutputJSONMode (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-031": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-031 TestPipeInput (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-032": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-032 TestRateLimiterSneaky (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-033": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-033 TestRateLimiterNormal (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     },
     "AC-034": {
       "status": "pass",
-      "testName": null,
-      "method": "exitcode"
+      "testName": "@spec:AC-034 TestRateLimiterAggressive (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
     }
   },
   "principles": {}

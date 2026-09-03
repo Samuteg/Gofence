@@ -3,6 +3,8 @@ package data
 import (
 	"log"
 	"net"
+	"net/url"
+	"strings"
 )
 
 type ScopeGuard struct {
@@ -21,6 +23,11 @@ func NewScopeGuard(cidrs []string) *ScopeGuard {
 	return g
 }
 
+// Empty reports whether the guard has no CIDRs (blocks everything).
+func (g *ScopeGuard) Empty() bool {
+	return g == nil || len(g.allowedCIDRs) == 0
+}
+
 func (g *ScopeGuard) IsAllowed(ip net.IP) bool {
 	for _, cidr := range g.allowedCIDRs {
 		if cidr.Contains(ip) {
@@ -36,4 +43,64 @@ func (g *ScopeGuard) CheckAndLog(ip net.IP, action string) bool {
 	}
 	log.Printf("[SCOPE] Out-of-Scope Blocked: %s attempted %s\n", ip.String(), action)
 	return false
+}
+
+// GuardForWorkspace builds a ScopeGuard from the workspace's allowed CIDRs.
+// An empty scope yields a guard that blocks everything (fail-closed).
+func GuardForWorkspace(db *DB, workspaceID int64) (*ScopeGuard, error) {
+	cidrs, err := db.ScopeGetCIDRs(workspaceID)
+	if err != nil {
+		return nil, err
+	}
+	return NewScopeGuard(cidrs), nil
+}
+
+// CheckHost reports whether host is in scope. Host may be an IP, ip:port,
+// URL or bare hostname (resolved via ResolveIP). Anything unresolvable or
+// empty is blocked: without an IP there is no way to prove it is contracted
+// (fail-closed). A nil guard also blocks.
+func CheckHost(g *ScopeGuard, host, action string) bool {
+	ip := hostToIP(host)
+	if ip == nil || g == nil {
+		log.Printf("[SCOPE] Out-of-Scope Blocked: %s attempted %s (unresolvable)\n", host, action)
+		return false
+	}
+	return g.CheckAndLog(ip, action)
+}
+
+// FilterAllowed keeps only the hosts in scope, logging each blocked one.
+func FilterAllowed(g *ScopeGuard, hosts []string, action string) []string {
+	var out []string
+	for _, h := range hosts {
+		if CheckHost(g, h, action) {
+			out = append(out, h)
+		}
+	}
+	return out
+}
+
+func hostToIP(host string) net.IP {
+	host = strings.TrimSpace(host)
+	if host == "" {
+		return nil
+	}
+	if strings.Contains(host, "://") {
+		if u, err := url.Parse(host); err == nil && u.Host != "" {
+			host = u.Host
+		}
+	}
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		host = h
+	}
+	if ip, _, err := net.ParseCIDR(host); err == nil {
+		return ip
+	}
+	host = strings.Trim(host, "[]")
+	if ip := net.ParseIP(host); ip != nil {
+		return ip
+	}
+	if resolved := ResolveIP(host); resolved != "" {
+		return net.ParseIP(resolved)
+	}
+	return nil
 }

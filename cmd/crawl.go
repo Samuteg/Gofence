@@ -17,13 +17,24 @@ var crawlDepth int
 var crawlCmd = &cobra.Command{
 	Use:   "crawl <url>",
 	Short: "AST-based web crawler with secret detection",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		targetURL := args[0]
+		targetURL, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
 		client := httpclient.NewFromEnv()
 		crawler := surface.NewCrawler(client, crawlDepth, concur)
 		crawler.WAF = ux.NewWAFDetector(0)
 		crawler.Limiter = ux.NewLimiter(ux.ProfileFromString(rateProf))
+
+		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, hostOf(targetURL), "crawl"); err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
 
 		result := crawler.Crawl(targetURL)
 
@@ -35,7 +46,6 @@ var crawlCmd = &cobra.Command{
 			fmt.Printf("Secrets found (%d):\n%s\n", len(result.Secrets), string(secOut))
 		}
 
-		db, wsID := openWorkspace()
 		if db != nil {
 			host := hostOf(targetURL)
 			ip := data.ResolveIP(host)

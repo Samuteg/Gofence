@@ -16,14 +16,16 @@ var vulnsTemplate string
 var vulnsCmd = &cobra.Command{
 	Use:   "vulns <alvo>",
 	Short: "Run vulnerability templates against target",
-	Args:  cobra.ExactArgs(1),
+	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		target := args[0]
+		target, err := stdinTarget(args)
+		if err != nil {
+			return err
+		}
 		client := httpclient.NewFromEnv()
 		engine := surface.NewVulnEngine(client)
 
 		var templates []*surface.VulnTemplate
-		var err error
 
 		if vulnsTemplate == "" {
 			templates, err = surface.LoadTemplateFS(assets.TemplatesFS())
@@ -49,6 +51,12 @@ var vulnsCmd = &cobra.Command{
 		}
 
 		db, wsID := openWorkspace()
+		if err := requireScope(db, wsID, hostOf(target), "vulns"); err != nil {
+			if db != nil {
+				db.Close()
+			}
+			return err
+		}
 		var (
 			totalExec, totalMatched, totalFailed int
 			persisted                            int
