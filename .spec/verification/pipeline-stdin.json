@@ -1,11 +1,11 @@
 {
   "feature": "pipeline-stdin",
-  "timestamp": "2026-09-03T01:28:08.262Z",
-  "gitRev": "a7078ab",
+  "timestamp": "2026-09-08T01:24:57.178Z",
+  "gitRev": "0180c7b",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 57,
+  "testsParsed": 84,
   "results": {
     "AC-040": {
       "status": "pass",

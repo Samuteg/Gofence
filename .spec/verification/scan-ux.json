@@ -1,0 +1,27 @@
+{
+  "feature": "scan-ux",
+  "timestamp": "2026-09-08T01:25:00.199Z",
+  "gitRev": "0180c7b",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 84,
+  "results": {
+    "AC-048": {
+      "status": "pass",
+      "testName": "@spec:AC-048 TestProgressWritesToStderr (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
+    },
+    "AC-070": {
+      "status": "pass",
+      "testName": "@spec:AC-070 TestProgressLeavesStdoutClean (github.com/nixteg/gofence/internal/ux)",
+      "method": "tap"
+    },
+    "AC-071": {
+      "status": "pass",
+      "testName": "@spec:AC-071 TestFuzzerRetryTransportError (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}

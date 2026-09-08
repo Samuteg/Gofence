@@ -171,14 +171,14 @@ para alimentar ferramentas que consomem esse formato (Metasploit, Faraday...).
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-015 | SYN scan exige privilégio; em ambiente de teste sem root, os testes cobrem o caminho de erro (AC-053) e a lógica de parse, não o socket real | aberta | A confirmar na execução — testes herméticos usam abstração injetável |
-| ASM-016 | Banco de assinaturas de SO embutido no binário cobre SOs comuns; assinaturas derivadas de fingerprints públicos documentados | aberta | Decisão do dono do produto: embutido |
-| ASM-017 | XML -oX segue o DTD público do nmap para os campos host/address/ports; campos não preenchidos pelo gofence ficam omitidos | aberta | Decisão do dono do produto: compatível com nmap |
-| ASM-018 | Banner grabbing é não-destrutivo: envia probe simples e lê a resposta inicial; sem handshakes de protocolo completos | aberta | A confirmar na execução |
+| ASM-015 | SYN scan exige privilégio; em ambiente de teste sem root, os testes cobrem o caminho de erro (AC-053) e a lógica de parse, não o socket real | confirmada | Testes herméticos usam probe injetável; erro claro sem privilégio (AC-053 provado) |
+| ASM-016 | Banco de assinaturas de SO embutido no binário cobre SOs comuns; assinaturas derivadas de fingerprints públicos documentados | confirmada | Decisão do dono do produto: embutido; banco em internal/assets/os-fingerprints.yaml |
+| ASM-017 | XML -oX segue o DTD público do nmap para os campos host/address/ports; campos não preenchidos pelo gofence ficam omitidos | confirmada | Decisão do dono do produto: compatível com nmap; subconjunto host/address/ports |
+| ASM-018 | Banner grabbing é não-destrutivo: envia probe simples e lê a resposta inicial; sem handshakes de protocolo completos | confirmada | Implementado com leitura passiva da resposta inicial; regex por serviço |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-012 | Quais checagens por protocolo implementar primeiro (DNS, SMTP, SNMP, SMB...)? | aberta | — |
-| Q-013 | Retry padrão: qual valor default (0 = sem retry, mantendo o comportamento atual)? | aberta | — |
+| Q-012 | Quais checagens por protocolo implementar primeiro (DNS, SMTP, SNMP, SMB...)? | respondida | DNS (53/UDP), SMTP (25/TCP) e SSH (22/TCP) — os três mais comuns; SNMP/SMB ficam para trabalho futuro |
+| Q-013 | Retry padrão: qual valor default (0 = sem retry, mantendo o comportamento atual)? | respondida | Port scan: 0 (sem retry, compatível); fuzzer: 2 (via --retries) — valores diferentes por risco de impacto |

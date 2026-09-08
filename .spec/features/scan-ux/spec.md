@@ -59,11 +59,11 @@ para reduzir falsos negativos em redes instáveis.
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-022 | Frequência de atualização do progresso: no máximo 1 linha/segundo e a cada ~1% de avanço, para não inundar o STDERR | aberta | A confirmar na execução |
-| ASM-023 | Retry padrão: 2 tentativas extras com backoff curto (ex.: 200ms) quando ativo; flag `--retries N` controla | aberta | A confirmar na execução |
+| ASM-022 | Frequência de atualização do progresso: no máximo 1 linha/segundo e a cada ~1% de avanço, para não inundar o STDERR | confirmada | Implementado no Progress (1 linha/s e por %); `\r` no TTY, linha nova no fim |
+| ASM-023 | Retry padrão: 2 tentativas extras com backoff curto (ex.: 200ms) quando ativo; flag `--retries N` controla | confirmada | Implementado (fuzzer default 2, backoff 200ms; port scan 0) |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-016 | Mostrar progresso por padrão em headless ou só com `--progress`? (por padrão muda a saída de quem já parseia STDERR) | aberta | — |
+| Q-016 | Mostrar progresso por padrão em headless ou só com `--progress`? (por padrão muda a saída de quem já parseia STDERR) | respondida | Por padrão ligado no fuzzer (--progress=true); desligável com --progress=false — STDERR é reservado para status, então não quebra pipelines |

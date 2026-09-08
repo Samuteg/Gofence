@@ -126,13 +126,13 @@ customizado no fuzzer, para testar áreas autenticadas.
 
 | ID | Suposição | Status | Resolução |
 |---|---|---|---|
-| ASM-019 | Wildcard é detectado por uma requisição de referência com path aleatório; respostas com mesmo status+size da referência são descartadas | aberta | A confirmar na execução — espelha a lógica já existente no DNS |
-| ASM-020 | Recursão é BFS limitada por profundidade máxima (flag), com deduplicação de URLs já visitadas | aberta | A confirmar na execução |
-| ASM-021 | Estado de resume é um arquivo JSON no caminho dado por `-o`/`--resume`, versionado simples (palavra atual + achados) | aberta | A confirmar na execução |
+| ASM-019 | Wildcard é detectado por uma requisição de referência com path aleatório; respostas com mesmo status+size da referência são descartadas | confirmada | Implementado (detectWildcard); respostas iguais são marcadas como wildcard e suprimidas |
+| ASM-020 | Recursão é BFS limitada por profundidade máxima (flag), com deduplicação de URLs já visitadas | confirmada | Implementado (FuzzRecursive com fila BFS e visited) |
+| ASM-021 | Estado de resume é um arquivo JSON no caminho dado por `-o`/`--resume`, versionado simples (palavra atual + achados) | confirmada | Implementado (FuzzState/FuzzResume com índice Processed) |
 
 ## Perguntas em aberto
 
 | ID | Pergunta | Status | Resposta |
 |---|---|---|---|
-| Q-014 | Profundidade padrão da recursão e limite máximo de URLs por diretório? | aberta | — |
-| Q-015 | Auth: apenas Basic ou também Bearer/NTLM via flag separada? | aberta | — |
+| Q-014 | Profundidade padrão da recursão e limite máximo de URLs por diretório? | respondida | --depth padrão 3 (flag --recursive); sem limite de URLs por diretório — visited set global evita loops |
+| Q-015 | Auth: apenas Basic ou também Bearer/NTLM via flag separada? | respondida | Basic via --auth user:pass; cookie e UA por flags próprias; Bearer/NTLM ficam para trabalho futuro |

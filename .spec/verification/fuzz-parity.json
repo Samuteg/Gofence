@@ -1,0 +1,57 @@
+{
+  "feature": "fuzz-parity",
+  "timestamp": "2026-09-08T01:24:59.443Z",
+  "gitRev": "0180c7b",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 84,
+  "results": {
+    "AC-047": {
+      "status": "pass",
+      "testName": "@spec:AC-047 TestFuzzerWildcardDetection (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-062": {
+      "status": "pass",
+      "testName": "@spec:AC-062 TestFuzzerExcludeLength (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-063": {
+      "status": "pass",
+      "testName": "@spec:AC-063 TestFuzzerStatusWhitelist (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-064": {
+      "status": "pass",
+      "testName": "@spec:AC-064 TestFuzzerRecursive (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-065": {
+      "status": "pass",
+      "testName": "@spec:AC-065 TestFuzzerExtensions (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-066": {
+      "status": "pass",
+      "testName": "@spec:AC-066 TestFuzzerVhost (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-067": {
+      "status": "pass",
+      "testName": "@spec:AC-067 TestFuzzerRobotsSeeds (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-068": {
+      "status": "pass",
+      "testName": "@spec:AC-068 TestFuzzerResume (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-069": {
+      "status": "pass",
+      "testName": "@spec:AC-069 TestFuzzerAuthCookieUA (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}

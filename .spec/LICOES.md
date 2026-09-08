@@ -23,6 +23,11 @@ Vistas em uma feature só. Registradas, não confiadas.
 - features: gofence-cli
 - última evidência: T-005 (gofence-cli, 2026-09-03T01:28:28.520Z)
 
+### L-003 — Ao criar feature nova, substituir os placeholders ASM-001/Q-001/T-001 do template antes do audit — eles colidem com features existentes
+- sinal: `ID_DUPLICADO` · recorrência: 1 feature(s) · penalidades: 0
+- features: port-parity
+- última evidência: ASM-001 (port-parity, 2026-09-08T01:25:13.017Z)
+
 ## Quarentena — aplicadas e falharam, ignorar
 
 A falha recorreu mesmo com a lição aplicada. Revisão é do usuário.

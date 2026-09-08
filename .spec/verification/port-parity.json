@@ -1,11 +1,82 @@
 {
   "feature": "port-parity",
-  "timestamp": "2026-09-08T01:12:50.830Z",
-  "gitRev": "0ac4d86",
+  "timestamp": "2026-09-08T01:24:58.687Z",
+  "gitRev": "0180c7b",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 57,
-  "results": {},
+  "testsParsed": 84,
+  "results": {
+    "AC-046": {
+      "status": "pass",
+      "testName": "@spec:AC-046 TestScanCIDRExpandsHosts (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-049": {
+      "status": "pass",
+      "testName": "@spec:AC-049 TestScanCIDRPerHostResults (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-050": {
+      "status": "pass",
+      "testName": "@spec:AC-050 TestIdentifyServiceFromBanner (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-051": {
+      "status": "pass",
+      "testName": "@spec:AC-051 TestIdentifyServiceFallbackStaticMap (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-052": {
+      "status": "pass",
+      "testName": "@spec:AC-052 TestSynScanReportsOpenPort (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-053": {
+      "status": "pass",
+      "testName": "@spec:AC-053 TestSynScanNoPrivilegeClearError (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-054": {
+      "status": "pass",
+      "testName": "@spec:AC-054 TestPingSweepListsLiveHosts (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-055": {
+      "status": "pass",
+      "testName": "@spec:AC-055 TestGuessOSFromTCPSignals (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-056": {
+      "status": "pass",
+      "testName": "@spec:AC-056 TestRetryBeforeClosed (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-057": {
+      "status": "pass",
+      "testName": "@spec:AC-057 TestScanIPv6Literal (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-058": {
+      "status": "pass",
+      "testName": "@spec:AC-058 TestResolveTargetsFromInputList (github.com/nixteg/gofence/cmd)",
+      "method": "tap"
+    },
+    "AC-059": {
+      "status": "pass",
+      "testName": "@spec:AC-059 TestRegisteredScriptRunsForService (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-060": {
+      "status": "pass",
+      "testName": "@spec:AC-060 TestProtocolCheckSMTPruns (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-061": {
+      "status": "pass",
+      "testName": "@spec:AC-061 TestWriteNmapXML (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    }
+  },
   "principles": {}
 }

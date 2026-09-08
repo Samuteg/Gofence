@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "proximoId": 3,
+  "proximoId": 4,
   "licoes": [
     {
       "id": "L-001",
@@ -47,6 +47,29 @@
       "penalidades": 0,
       "criadaEm": "2026-09-03T01:28:28.520Z",
       "ultimaVez": "2026-09-03T01:28:28.520Z"
+    },
+    {
+      "id": "L-003",
+      "texto": "Ao criar feature nova, substituir os placeholders ASM-001/Q-001/T-001 do template antes do audit — eles colidem com features existentes",
+      "chave": "ID_DUPLICADO::ao criar feature nova substituir os placeholders asm 001 q 001 t 001 do template antes do audit eles colidem com features existentes",
+      "sinal": "ID_DUPLICADO",
+      "escopo": null,
+      "status": "candidata",
+      "recorrencia": 1,
+      "features": [
+        "port-parity"
+      ],
+      "evidencias": [
+        {
+          "fonte": "ASM-001",
+          "feature": "port-parity",
+          "quando": "2026-09-08T01:25:13.017Z",
+          "gitRev": "0ac4d86"
+        }
+      ],
+      "penalidades": 0,
+      "criadaEm": "2026-09-08T01:25:13.017Z",
+      "ultimaVez": "2026-09-08T01:25:13.017Z"
     }
   ]
 }
