@@ -1,11 +1,11 @@
 {
   "feature": "scope-enforcement",
-  "timestamp": "2026-09-08T01:27:02.381Z",
-  "gitRev": "8c7f287",
+  "timestamp": "2026-09-08T01:32:01.267Z",
+  "gitRev": "31f5454",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 84,
+  "testsParsed": 85,
   "results": {
     "AC-035": {
       "status": "pass",
