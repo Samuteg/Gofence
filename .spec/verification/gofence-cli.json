@@ -1,7 +1,7 @@
 {
   "feature": "gofence-cli",
-  "timestamp": "2026-09-08T01:24:55.613Z",
-  "gitRev": "0180c7b",
+  "timestamp": "2026-09-08T01:27:01.628Z",
+  "gitRev": "8c7f287",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,

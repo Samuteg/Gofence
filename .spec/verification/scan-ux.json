@@ -1,7 +1,7 @@
 {
   "feature": "scan-ux",
-  "timestamp": "2026-09-08T01:25:00.199Z",
-  "gitRev": "0180c7b",
+  "timestamp": "2026-09-08T01:27:06.181Z",
+  "gitRev": "8c7f287",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,

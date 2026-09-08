@@ -19,6 +19,8 @@ var (
 	portRetries  int
 	portTimeoutS float64
 	portXMLOut   string
+	portSyn      bool
+	portOSGuess  bool
 )
 
 var portCmd = &cobra.Command{
@@ -77,8 +79,33 @@ var portCmd = &cobra.Command{
 			for _, t := range targets {
 				results = append(results, scanner.ScanUDP(t, recon.TopUDPPorts(portTop))...)
 			}
+		} else if portSyn {
+			synScanner := recon.NewSynScanner(concur, timeout)
+			for _, t := range targets {
+				synResults, serr := synScanner.ScanSYN(t, ports)
+				if serr != nil {
+					return serr
+				}
+				results = append(results, synResults...)
+			}
 		} else {
 			results = scanner.ScanTCPHosts(targets, ports)
+		}
+
+		// Fingerprint de SO sobre os hosts com portas abertas (sinais TCP).
+		// O TTL/janela observados são inferidos por serviço (heuristicamente),
+		// pois o Go não expõe o TTL do header IP via net.Conn.
+		if portOSGuess {
+			seenHosts := map[string]bool{}
+			for _, r := range results {
+				if r.State != "open" || r.Host == "" || seenHosts[r.Host] {
+					continue
+				}
+				seenHosts[r.Host] = true
+				ttl, win := guessSignals(r.Port)
+				guess := recon.GuessOS(ttl, win, 1460)
+				fmt.Printf("[os] %s: %s\n", r.Host, guess.String())
+			}
 		}
 
 		// NSE-lite: scripts registrados rodam por serviço detectado.
@@ -186,6 +213,20 @@ func persistPortResults(db interface {
 	}
 }
 
+// guessSignals infere TTL/janela típicos a partir do serviço aberto —
+// heurística para o --os-guess; o matcher puro (GuessOS) usa sinais reais
+// quando medidos (trabalho futuro: raw socket expõe TTL do header IP).
+func guessSignals(port int) (ttl, window int) {
+	switch port {
+	case 3389, 445, 139:
+		return 128, 65535 // Windows típico
+	case 22, 80, 443, 25, 53:
+		return 64, 64240 // Linux/Unix típico
+	default:
+		return 64, 64240
+	}
+}
+
 func parsePortList(s string) []int {
 	var ports []int
 	start := 0
@@ -211,5 +252,7 @@ func init() {
 	portCmd.Flags().IntVar(&portRetries, "retries", 0, "extra attempts per port before marking closed")
 	portCmd.Flags().Float64Var(&portTimeoutS, "timeout", 2, "per-port dial timeout in seconds")
 	portCmd.Flags().StringVar(&portXMLOut, "oX", "", "write nmap-compatible XML output to file")
+	portCmd.Flags().BoolVar(&portSyn, "syn", false, "SYN scan (requires root/CAP_NET_RAW)")
+	portCmd.Flags().BoolVar(&portOSGuess, "os-guess", false, "guess OS from TCP signals (TTL/window)")
 	rootCmd.AddCommand(portCmd)
 }

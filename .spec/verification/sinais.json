@@ -1094,10 +1094,10 @@
       "codigo": "VERIFY_OBSOLETO",
       "feature": "gofence-cli",
       "ref": "—",
-      "ocorrencias": 2,
+      "ocorrencias": 4,
       "primeiraVez": "2026-09-03T01:09:46.506Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "ARQUIVO_ORFAO::—::cmd/helpers.go": {
       "codigo": "ARQUIVO_ORFAO",
@@ -1562,46 +1562,46 @@
       "codigo": "VERIFY_OBSOLETO",
       "feature": "fuzz-parity",
       "ref": "—",
-      "ocorrencias": 1,
+      "ocorrencias": 3,
       "primeiraVez": "2026-09-08T01:24:42.228Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "VERIFY_OBSOLETO::pipeline-stdin::—": {
       "codigo": "VERIFY_OBSOLETO",
       "feature": "pipeline-stdin",
       "ref": "—",
-      "ocorrencias": 1,
+      "ocorrencias": 3,
       "primeiraVez": "2026-09-08T01:24:42.228Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "VERIFY_OBSOLETO::port-parity::—": {
       "codigo": "VERIFY_OBSOLETO",
       "feature": "port-parity",
       "ref": "—",
-      "ocorrencias": 1,
+      "ocorrencias": 3,
       "primeiraVez": "2026-09-08T01:24:42.228Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "VERIFY_OBSOLETO::scope-enforcement::—": {
       "codigo": "VERIFY_OBSOLETO",
       "feature": "scope-enforcement",
       "ref": "—",
-      "ocorrencias": 1,
+      "ocorrencias": 3,
       "primeiraVez": "2026-09-08T01:24:42.228Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "VERIFY_OBSOLETO::workspace-delete::—": {
       "codigo": "VERIFY_OBSOLETO",
       "feature": "workspace-delete",
       "ref": "—",
-      "ocorrencias": 1,
+      "ocorrencias": 3,
       "primeiraVez": "2026-09-08T01:24:42.228Z",
-      "ultimaVez": "2026-09-08T01:24:42.228Z",
-      "gitRev": "0180c7b"
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     },
     "ARQUIVO_ORFAO::—::internal/surface/fuzzer_features.go": {
       "codigo": "ARQUIVO_ORFAO",
@@ -1611,6 +1611,15 @@
       "primeiraVez": "2026-09-08T01:24:42.228Z",
       "ultimaVez": "2026-09-08T01:24:42.228Z",
       "gitRev": "0180c7b"
+    },
+    "VERIFY_OBSOLETO::scan-ux::—": {
+      "codigo": "VERIFY_OBSOLETO",
+      "feature": "scan-ux",
+      "ref": "—",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-08T01:26:51.808Z",
+      "ultimaVez": "2026-09-08T01:26:56.024Z",
+      "gitRev": "8c7f287"
     }
   }
 }

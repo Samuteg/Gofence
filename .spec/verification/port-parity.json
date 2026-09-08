@@ -1,7 +1,7 @@
 {
   "feature": "port-parity",
-  "timestamp": "2026-09-08T01:24:58.687Z",
-  "gitRev": "0180c7b",
+  "timestamp": "2026-09-08T01:27:04.656Z",
+  "gitRev": "8c7f287",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,

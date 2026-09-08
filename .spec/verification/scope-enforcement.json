@@ -1,7 +1,7 @@
 {
   "feature": "scope-enforcement",
-  "timestamp": "2026-09-08T01:24:56.393Z",
-  "gitRev": "0180c7b",
+  "timestamp": "2026-09-08T01:27:02.381Z",
+  "gitRev": "8c7f287",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,

@@ -176,9 +176,32 @@ gofence port 10.0.0.5 --ports 22,80,443,8080
 # Varredura UDP (top 100)
 gofence port 10.0.0.5 --udp --top 100
 
-# CIDR inteiro
-gofence port 10.0.0.0/24 --top 100
+# CIDR inteiro — expandido host a host
+gofence port 10.0.0.0/24 --top 1000
+
+# Lista de alvos em arquivo (-iL; CIDRs do arquivo também são expandidos)
+gofence port -iL alvos.txt --top 1000
+
+# Ping sweep antes de varrer (descobre hosts vivos)
+gofence port 10.0.0.0/24 --ping-sweep
+
+# Retries e timeout por porta
+gofence port 10.0.0.5 --ports 22,80 --retries 2 --timeout 3
+
+# SYN scan stealth — exige root/CAP_NET_RAW; sem privilégio, erro claro
+gofence port 10.0.0.5 --syn --ports 22,80,443
+
+# Palpite de SO por sinais TCP (TTL/janela heurísticos por serviço)
+gofence port 10.0.0.5 --ports 22,3389 --os-guess
+
+# Saída XML compatível com nmap -oX (Metasploit/Faraday)
+gofence port 10.0.0.5 --top 1000 -oX scan.xml
 ```
+
+A detecção de serviço/versão é automática: banner grabbing na porta aberta
+(SSH, HTTP, FTP, SMTP...) preenche `Service` e `Version`; sem banner, cai no
+mapa estático. Scripts NSE-lite registrados em Go rodam por serviço
+detectado (SSH/DNS/SMTP) e seus resultados aparecem na saída.
 
 Portas abertas são persistidas no workspace ativo (tabela `ports`).
 
@@ -210,11 +233,39 @@ gofence fuzz https://alvo.com/login -w passwords.txt --data "user=admin&pass=FUZ
 
 # Suprimir status codes ruidosos e desativar parada por WAF
 gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --ignore-status 403,429 --waf-backoff=false
+
+# Whitelist de status e filtro por tamanho de resposta
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --status-codes 200,301 --exclude-length 404,500
+
+# Recursão em diretórios descobertos (BFS, profundidade limitada)
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --recursive --depth 3
+
+# Extensões automáticas (-x): testa index.php, index.html...
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt -x php,html
+
+# Modo vhost: fuzza Host header e filtra respostas iguais à base
+gofence fuzz https://alvo.com/ -w hosts.txt --vhost
+
+# Seeds de robots.txt/sitemap.xml
+#gofence fuzz https://alvo.com/FUZZ --robots
+#gofence fuzz https://alvo.com/FUZZ --sitemap
+
+# Resume: salvar estado e continuar depois
+#gofence fuzz https://alvo.com/FUZZ -w wordlist.txt -o estado.json
+#gofence fuzz https://alvo.com/FUZZ --resume estado.json
+
+# Auth, cookie e User-Agent
+#gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --auth admin:secret --cookie "session=abc" --user-agent "gofence/1.0"
 ```
 
 Imprime no STDOUT apenas respostas com status ≠ 404: `[status] url (size: N)`.
-Com `--waf-backoff` (padrão), ao detectar WAF a onda para e um aviso
-`WAF wall hit (...)` vai para o STDERR com sugestão de `--rate sneaky`.
+A detecção de página curinga (wildcard) é automática: uma requisição de
+referência com path aleatório é feita antes da onda, e respostas com mesmo
+status+tamanho são descartadas com aviso no STDERR. Com `--waf-backoff`
+(padrão), ao detectar WAF a onda para e um aviso `WAF wall hit (...)` vai
+para o STDERR com sugestão de `--rate sneaky`. Erros de conexão transientes
+são retentados (`--retries`, padrão 2). Progresso/ETA aparecem no STDERR
+(`--progress`, padrão ligado; STDOUT permanece puro para pipelines).
 Achados são persistidos no workspace ativo (`info/fuzz <status>`).
 
 ### `tls` — Análise de certificado

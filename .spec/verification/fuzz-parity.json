@@ -1,7 +1,7 @@
 {
   "feature": "fuzz-parity",
-  "timestamp": "2026-09-08T01:24:59.443Z",
-  "gitRev": "0180c7b",
+  "timestamp": "2026-09-08T01:27:05.434Z",
+  "gitRev": "8c7f287",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
