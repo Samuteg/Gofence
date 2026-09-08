@@ -18,7 +18,7 @@ func init() {
 	})
 
 	RegisterScript("smtp", "ehlo", func(host string, port int) ScriptResult {
-		addr := fmt.Sprintf("%s:%d", host, port)
+		addr := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 		conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
 		if err != nil {
 			return ScriptResult{Service: "smtp", Name: "ehlo", OK: false, Detail: err.Error()}

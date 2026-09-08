@@ -35,6 +35,7 @@ type Fuzzer struct {
 	ExcludeSize  []int64
 	Retries      int
 	Limiter      *rate.Limiter
+	Progress     bool
 
 	// Wildcard detection: requisição de referência com path aleatório.
 	WildcardBase string // base URL usada para detectar página curinga
@@ -53,6 +54,23 @@ func NewFuzzer(client *httpclient.Client, concurrency int) *Fuzzer {
 		concurrency = 50
 	}
 	return &Fuzzer{client: client, Concurrency: concurrency}
+}
+
+// countLines conta as linhas não-vazias de uma wordlist (para o total do progresso).
+func countLines(path string) int {
+	f, err := os.Open(path)
+	if err != nil {
+		return 0
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	n := 0
+	for scanner.Scan() {
+		if strings.TrimSpace(scanner.Text()) != "" {
+			n++
+		}
+	}
+	return n
 }
 
 func (f *Fuzzer) ignore(code int) bool {
@@ -109,9 +127,19 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 	sem := make(chan struct{}, f.Concurrency)
 	var wg sync.WaitGroup
 
+	// Progresso opcional: conta palavras primeiro para o total.
+	var progress *ux.Progress
+	if f.Progress {
+		total := countLines(wordlistPath)
+		progress = ux.NewProgress(total, true)
+	}
+
 	go func() {
 		defer file.Close()
 		defer close(results)
+		if progress != nil {
+			defer progress.Done()
+		}
 
 		// Wildcard: descobre a referência antes da onda.
 		wildcardStatus, wildcardSize, hasWildcard := 0, int64(0), false
@@ -139,6 +167,9 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 			go func(word string) {
 				defer wg.Done()
 				defer func() { <-sem }()
+				if progress != nil {
+					progress.Inc()
+				}
 
 				if f.Limiter != nil {
 					if err := f.Limiter.Wait(ctx); err != nil {

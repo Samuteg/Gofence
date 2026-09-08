@@ -73,6 +73,7 @@ var fuzzCmd = &cobra.Command{
 		fuzzer.StatusCodes = parseInts(fuzzStatusCodes)
 		fuzzer.ExcludeSize = parseInt64s(fuzzExcludeSize)
 		fuzzer.Retries = fuzzRetries
+		fuzzer.Progress = fuzzProgress
 		fuzzer.Limiter = ux.NewLimiter(ux.ProfileFromString(rateProf))
 
 		if fuzzAuth != "" {
