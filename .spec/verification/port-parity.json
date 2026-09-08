@@ -1,0 +1,11 @@
+{
+  "feature": "port-parity",
+  "timestamp": "2026-09-08T01:12:50.830Z",
+  "gitRev": "0ac4d86",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 57,
+  "results": {},
+  "principles": {}
+}

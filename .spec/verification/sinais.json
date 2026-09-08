@@ -1188,6 +1188,375 @@
       "primeiraVez": "2026-09-03T01:21:23.982Z",
       "ultimaVez": "2026-09-03T01:21:27.968Z",
       "gitRev": "a7078ab"
+    },
+    "ID_DUPLICADO::gofence-cli::ASM-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "gofence-cli",
+      "ref": "ASM-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.505Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ID_DUPLICADO::gofence-cli::Q-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "gofence-cli",
+      "ref": "Q-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ID_DUPLICADO::port-parity::ASM-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "port-parity",
+      "ref": "ASM-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ID_DUPLICADO::port-parity::Q-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "port-parity",
+      "ref": "Q-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ID_DUPLICADO::scan-ux::ASM-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "scan-ux",
+      "ref": "ASM-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ID_DUPLICADO::scan-ux::Q-001": {
+      "codigo": "ID_DUPLICADO",
+      "feature": "scan-ux",
+      "ref": "Q-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::fuzz-parity::T-001": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "fuzz-parity",
+      "ref": "T-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-047": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-047",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:12:33.337Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-001": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-046": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-046",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::scan-ux::T-001": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "scan-ux",
+      "ref": "T-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:09:46.512Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::scan-ux::AC-048": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "scan-ux",
+      "ref": "AC-048",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-08T01:09:46.512Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-062": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-062",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-063": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-063",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-064": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-064",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-065": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-065",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-066": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-066",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-067": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-067",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-068": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-068",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::fuzz-parity::AC-069": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "fuzz-parity",
+      "ref": "AC-069",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-030": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-030",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-031": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-031",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-032": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-032",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-036": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-036",
+      "ocorrencias": 4,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::port-parity::T-037": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "port-parity",
+      "ref": "T-037",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-049": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-049",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-050": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-050",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-051": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-051",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-052": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-052",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-053": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-053",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-054": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-054",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-055": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-055",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-056": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-056",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-057": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-057",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-058": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-058",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-059": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-059",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-060": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-060",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::port-parity::AC-061": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "port-parity",
+      "ref": "AC-061",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "ARQUIVO_INEXISTENTE::scan-ux::T-047": {
+      "codigo": "ARQUIVO_INEXISTENTE",
+      "feature": "scan-ux",
+      "ref": "T-047",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::scan-ux::AC-070": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "scan-ux",
+      "ref": "AC-070",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
+    },
+    "AC_SEM_TESTE::scan-ux::AC-071": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "scan-ux",
+      "ref": "AC-071",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-08T01:12:33.338Z",
+      "ultimaVez": "2026-09-08T01:12:33.338Z",
+      "gitRev": "0ac4d86"
     }
   }
 }
