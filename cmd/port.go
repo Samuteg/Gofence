@@ -2,15 +2,23 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"strings"
+	"time"
 
 	"github.com/nixteg/gofence/internal/recon"
 	"github.com/spf13/cobra"
 )
 
 var (
-	portList string
-	portTop  int
-	portUDP  bool
+	portList     string
+	portTop      int
+	portUDP      bool
+	portInputL   string
+	portPing     bool
+	portRetries  int
+	portTimeoutS float64
+	portXMLOut   string
 )
 
 var portCmd = &cobra.Command{
@@ -22,14 +30,29 @@ var portCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		db, wsID := openWorkspace()
-		if err := requireScope(db, wsID, target, "port"); err != nil {
-			if db != nil {
-				db.Close()
-			}
+
+		// -iL fornece a lista de alvos; o argumento posicional (ou stdin) soma-se.
+		targets, err := resolvePortTargets(target, portInputL)
+		if err != nil {
 			return err
 		}
-		scanner := recon.NewPortScanner(concur, 0)
+		if len(targets) == 0 {
+			return fmt.Errorf("no targets: pass <ip/cidr> or -iL <file>")
+		}
+
+		db, wsID := openWorkspace()
+		for _, t := range targets {
+			if err := requireScope(db, wsID, t, "port"); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
+			}
+		}
+
+		timeout := time.Duration(portTimeoutS * float64(time.Second))
+		scanner := recon.NewPortScanner(concur, timeout)
+		scanner.Retries = portRetries
 
 		var ports []int
 		if portList != "" {
@@ -38,28 +61,129 @@ var portCmd = &cobra.Command{
 			ports = recon.TopPorts(portTop)
 		}
 
+		// Ping sweep primeiro: só varre hosts vivos quando pedido.
+		if portPing {
+			alive := scanner.PingSweep(targets, []int{80, 443, 22, 8080})
+			if len(alive) == 0 {
+				fmt.Fprintln(os.Stderr, "ping sweep: no live hosts found")
+				return nil
+			}
+			fmt.Fprintf(os.Stderr, "ping sweep: %d live host(s)\n", len(alive))
+			targets = alive
+		}
+
 		var results []recon.PortResult
 		if portUDP {
-			results = scanner.ScanUDP(target, recon.TopUDPPorts(portTop))
+			for _, t := range targets {
+				results = append(results, scanner.ScanUDP(t, recon.TopUDPPorts(portTop))...)
+			}
 		} else {
-			results = scanner.ScanTCP(target, ports)
+			results = scanner.ScanTCPHosts(targets, ports)
 		}
 
+		// NSE-lite: scripts registrados rodam por serviço detectado.
 		for _, r := range results {
-			fmt.Printf("%d/%s %s\n", r.Port, r.State, r.Service)
+			if r.Service == "" {
+				continue
+			}
+			for _, sr := range recon.RunScripts(r.Host, r.Port, r.Service) {
+				results = append(results, recon.PortResult{
+					Host:    r.Host,
+					Port:    r.Port,
+					State:   "script",
+					Service: sr.Service + "/" + sr.Name,
+					Version: fmt.Sprintf("%v|%s", sr.OK, sr.Detail),
+				})
+			}
 		}
+
+		if portXMLOut != "" {
+			if err := recon.WriteNmapXML(portXMLOut, results); err != nil {
+				return fmt.Errorf("write -oX: %w", err)
+			}
+			fmt.Fprintf(os.Stderr, "XML written to %s\n", portXMLOut)
+			return nil
+		}
+
+		printPortResults(results)
 
 		if db != nil {
-			hostID, err := db.HostUpsert(wsID, target, target)
-			if err == nil {
-				for _, r := range results {
-					_ = db.PortUpsert(hostID, r.Port, r.Service, r.State)
-				}
-			}
+			persistPortResults(db, wsID, results)
 			db.Close()
 		}
 		return nil
 	},
+}
+
+// resolvePortTargets junta o alvo posicional com -iL, expandindo CIDRs.
+func resolvePortTargets(arg, inputList string) ([]string, error) {
+	var raw []string
+	if inputList != "" {
+		b, err := os.ReadFile(inputList)
+		if err != nil {
+			return nil, fmt.Errorf("read -iL file: %w", err)
+		}
+		for _, line := range strings.Split(string(b), "\n") {
+			line = strings.TrimSpace(line)
+			if line != "" && !strings.HasPrefix(line, "#") {
+				raw = append(raw, line)
+			}
+		}
+	}
+	if arg != "" {
+		raw = append(raw, arg)
+	}
+
+	var targets []string
+	for _, r := range raw {
+		if strings.Contains(r, "/") {
+			hosts, err := recon.ExpandCIDR(r)
+			if err != nil {
+				return nil, err
+			}
+			targets = append(targets, hosts...)
+		} else {
+			targets = append(targets, r)
+		}
+	}
+	return targets, nil
+}
+
+func printPortResults(results []recon.PortResult) {
+	for _, r := range results {
+		if r.Host != "" {
+			fmt.Printf("%s %d/%s %s", r.Host, r.Port, r.State, r.Service)
+		} else {
+			fmt.Printf("%d/%s %s", r.Port, r.State, r.Service)
+		}
+		if r.Version != "" {
+			fmt.Printf(" (%s)", r.Version)
+		}
+		fmt.Println()
+	}
+}
+
+func persistPortResults(db interface {
+	HostUpsert(wsID int64, host, label string) (int64, error)
+	PortUpsert(hostID int64, port int, service, state string) error
+}, wsID int64, results []recon.PortResult) {
+	seen := map[string]int64{}
+	for _, r := range results {
+		host := r.Host
+		if host == "" {
+			continue
+		}
+		hostID, ok := seen[host]
+		if !ok {
+			hid, err := db.HostUpsert(wsID, host, host)
+			if err != nil {
+				continue
+			}
+			hostID = hid
+			seen[host] = hid
+		}
+		_ = db.PortUpsert(hostID, r.Port, r.Service, r.State)
+	}
 }
 
 func parsePortList(s string) []int {
@@ -82,5 +206,10 @@ func init() {
 	portCmd.Flags().StringVar(&portList, "ports", "", "comma-separated port list")
 	portCmd.Flags().IntVar(&portTop, "top", 1000, "scan top N common ports")
 	portCmd.Flags().BoolVar(&portUDP, "udp", false, "scan UDP ports")
+	portCmd.Flags().StringVar(&portInputL, "iL", "", "file with one target per line (IPs or CIDRs)")
+	portCmd.Flags().BoolVar(&portPing, "ping-sweep", false, "discover live hosts before scanning (TCP probe)")
+	portCmd.Flags().IntVar(&portRetries, "retries", 0, "extra attempts per port before marking closed")
+	portCmd.Flags().Float64Var(&portTimeoutS, "timeout", 2, "per-port dial timeout in seconds")
+	portCmd.Flags().StringVar(&portXMLOut, "oX", "", "write nmap-compatible XML output to file")
 	rootCmd.AddCommand(portCmd)
 }
