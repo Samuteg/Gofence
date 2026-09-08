@@ -255,7 +255,7 @@ func init() {
 	fuzzCmd.Flags().BoolVar(&fuzzVhost, "vhost", false, "fuzz vhosts via Host header, filtering base responses")
 	fuzzCmd.Flags().BoolVar(&fuzzRobots, "robots", false, "seed wordlist from robots.txt")
 	fuzzCmd.Flags().BoolVar(&fuzzSitemap, "sitemap", false, "seed wordlist from sitemap.xml")
-	fuzzCmd.Flags().StringVar(&fuzzOutput, "o", "", "save progress state to file (resumable)")
+	fuzzCmd.Flags().StringVarP(&fuzzOutput, "output", "o", "", "save progress state to file (resumable)")
 	fuzzCmd.Flags().StringVar(&fuzzResume, "resume", "", "resume fuzz session from saved state")
 	fuzzCmd.Flags().StringVar(&fuzzAuth, "auth", "", "basic auth user:pass")
 	fuzzCmd.Flags().StringVar(&fuzzCookie, "cookie", "", "Cookie header value")

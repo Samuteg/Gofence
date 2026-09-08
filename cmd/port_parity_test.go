@@ -31,3 +31,19 @@ func TestResolveTargetsFromInputList(t *testing.T) {
 		t.Errorf("AC-058: missing expected hosts in %v", targets)
 	}
 }
+
+// @spec:AC-058 — -iL sozinho (sem alvo posicional) resolve os alvos
+func TestResolveTargetsFromInputListOnly(t *testing.T) {
+	dir := t.TempDir()
+	listFile := filepath.Join(dir, "only.txt")
+	if err := os.WriteFile(listFile, []byte("10.0.0.9\n"), 0644); err != nil {
+		t.Fatalf("AC-058: write: %v", err)
+	}
+	targets, err := resolvePortTargets("", listFile)
+	if err != nil {
+		t.Fatalf("AC-058: resolve: %v", err)
+	}
+	if len(targets) != 1 || targets[0] != "10.0.0.9" {
+		t.Errorf("AC-058: expected [10.0.0.9], got %v", targets)
+	}
+}

@@ -28,15 +28,19 @@ var portCmd = &cobra.Command{
 	Short: "TCP/UDP port scanner",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		target, err := stdinTarget(args)
+		var target string
+	if len(args) > 0 || portInputL == "" {
+		var err error
+		target, err = stdinTarget(args)
 		if err != nil {
 			return err
 		}
+	}
 
-		// -iL fornece a lista de alvos; o argumento posicional (ou stdin) soma-se.
-		targets, err := resolvePortTargets(target, portInputL)
-		if err != nil {
-			return err
+	// -iL fornece a lista de alvos; o argumento posicional (ou stdin) soma-se.
+	targets, err := resolvePortTargets(target, portInputL)
+	if err != nil {
+		return err
 		}
 		if len(targets) == 0 {
 			return fmt.Errorf("no targets: pass <ip/cidr> or -iL <file>")
