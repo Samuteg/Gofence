@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//go:embed wordlists/*.txt templates/*.yaml
+//go:embed wordlists/*.txt templates/*.yaml os-fingerprints.yaml
 var embedded embed.FS
 
 // Wordlist returns the lines of an embedded wordlist (subdomains.txt / paths.txt).
@@ -35,4 +35,9 @@ func TemplatesFS() fs.FS {
 func HasWordlist(name string) bool {
 	_, err := embedded.ReadFile("wordlists/" + name)
 	return err == nil
+}
+
+// OSFingerprints returns the embedded OS fingerprint YAML data.
+func OSFingerprints() ([]byte, error) {
+	return embedded.ReadFile("os-fingerprints.yaml")
 }
