@@ -1,0 +1,22 @@
+{
+  "feature": "nse-snmp-smb",
+  "timestamp": "2026-09-08T01:47:17.818Z",
+  "gitRev": "ae3bdfb",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 95,
+  "results": {
+    "AC-072": {
+      "status": "pass",
+      "testName": "@spec:AC-072 TestSnmpSysDescr (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    },
+    "AC-073": {
+      "status": "pass",
+      "testName": "@spec:AC-073 TestSMBNegotiateDialect (github.com/nixteg/gofence/internal/recon)",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}

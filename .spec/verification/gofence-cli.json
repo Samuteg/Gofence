@@ -1,11 +1,11 @@
 {
   "feature": "gofence-cli",
-  "timestamp": "2026-09-08T01:39:46.243Z",
-  "gitRev": "886ad9e",
+  "timestamp": "2026-09-08T01:47:12.647Z",
+  "gitRev": "ae3bdfb",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 88,
+  "testsParsed": 95,
   "results": {
     "AC-001": {
       "status": "pass",

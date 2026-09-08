@@ -1,0 +1,37 @@
+{
+  "feature": "fuzz-advanced",
+  "timestamp": "2026-09-08T01:47:18.550Z",
+  "gitRev": "ae3bdfb",
+  "command": "go test -json ./... | python3 .spec/go-tap.py",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 95,
+  "results": {
+    "AC-074": {
+      "status": "pass",
+      "testName": "@spec:AC-074 TestFuzzerBearerToken (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-075": {
+      "status": "pass",
+      "testName": "@spec:AC-075 TestFuzzerNTLMHandshake (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-076": {
+      "status": "pass",
+      "testName": "@spec:AC-076 TestFuzzerParamFuzz (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-077": {
+      "status": "pass",
+      "testName": "@spec:AC-077 TestCheckS3Bucket (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    },
+    "AC-078": {
+      "status": "pass",
+      "testName": "@spec:AC-078 TestFuzzDNSMode (github.com/nixteg/gofence/internal/surface)",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}
