@@ -38,6 +38,14 @@ var (
 	fuzzUserAgent    string
 	fuzzRetries      int
 	fuzzProgress     bool
+
+	// fuzz-advanced
+	fuzzBearer    string
+	fuzzNTLM      string
+	fuzzParam     string
+	fuzzS3        bool
+	fuzzDNS       string
+	fuzzNameserver string
 )
 
 var fuzzCmd = &cobra.Command{
@@ -76,9 +84,12 @@ var fuzzCmd = &cobra.Command{
 		fuzzer.Progress = fuzzProgress
 		fuzzer.Limiter = ux.NewLimiter(ux.ProfileFromString(rateProf))
 
-		if fuzzAuth != "" {
+		if fuzzAuth != "" || fuzzBearer != "" || fuzzNTLM != "" {
 			user, pass, _ := strings.Cut(fuzzAuth, ":")
-			fuzzer.SetAuth(surface.FuzzAuth{User: user, Pass: pass, Cookie: fuzzCookie, UserAgent: fuzzUserAgent})
+			fuzzer.SetAuth(surface.FuzzAuth{User: user, Pass: pass, Cookie: fuzzCookie, UserAgent: fuzzUserAgent, Bearer: fuzzBearer, NTLM: fuzzNTLM})
+		}
+		if fuzzParam != "" {
+			fuzzer.ParamFuzz = fuzzParam
 		}
 
 		var waf *ux.WAFDetector
@@ -93,6 +104,34 @@ var fuzzCmd = &cobra.Command{
 				db.Close()
 			}
 			return err
+		}
+
+		// Modo s3: testa nomes de bucket (targetURL é só base/placeholder).
+		if fuzzS3 {
+			names := readWordlist(fuzzWordlist)
+			for _, r := range fuzzer.FuzzS3(names) {
+				if !r.Exists {
+					continue
+				}
+				label := "exists"
+				if r.Private {
+					label = "exists/private"
+				}
+				fmt.Printf("[%d] %s (%s)\n", r.StatusCode, r.Bucket, label)
+			}
+			return nil
+		}
+
+		// Modo dns: resolve subdomínios via recon.Resolver.
+		if fuzzDNS != "" {
+			resolved, derr := surface.FuzzDNS(concur, fuzzDNS, fuzzWordlist, fuzzNameserver)
+			if derr != nil {
+				return derr
+			}
+			for _, r := range resolved {
+				fmt.Printf("%s %s\n", r.Subdomain, r.IP)
+			}
+			return nil
 		}
 
 		// Fonte de paths: robots.txt/sitemap.xml viram wordlist temporária.
@@ -262,7 +301,28 @@ func init() {
 	fuzzCmd.Flags().StringVar(&fuzzUserAgent, "user-agent", "", "custom User-Agent")
 	fuzzCmd.Flags().IntVar(&fuzzRetries, "retries", 2, "extra attempts per word on transport errors")
 	fuzzCmd.Flags().BoolVar(&fuzzProgress, "progress", true, "show progress on stderr")
+	fuzzCmd.Flags().StringVar(&fuzzBearer, "bearer", "", "Bearer token for Authorization header")
+	fuzzCmd.Flags().StringVar(&fuzzNTLM, "ntlm", "", "NTLM credentials user:pass (HTTP NTLMv2)")
+	fuzzCmd.Flags().StringVar(&fuzzParam, "param", "", "fuzz this query parameter with each word (e.g. user)")
+	fuzzCmd.Flags().BoolVar(&fuzzS3, "s3", false, "test bucket names from wordlist against S3")
+	fuzzCmd.Flags().StringVar(&fuzzDNS, "dns", "", "fuzz subdomains of this domain (gobuster dns style)")
+	fuzzCmd.Flags().StringVar(&fuzzNameserver, "nameserver", "", "DNS nameserver host:port for --dns mode")
 	rootCmd.AddCommand(fuzzCmd)
+}
+
+func readWordlist(path string) []string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	var out []string
+	for _, line := range strings.Split(string(b), "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" && !strings.HasPrefix(line, "#") {
+			out = append(out, line)
+		}
+	}
+	return out
 }
 
 func parseStatuses(in []string) []int {

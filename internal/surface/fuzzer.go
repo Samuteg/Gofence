@@ -47,6 +47,15 @@ type Fuzzer struct {
 	authPass  string
 	cookie    string
 	userAgent string
+	bearer    string
+	ntlmCreds string
+
+	// ParamFuzz: quando setado, cada palavra vira valor deste parâmetro.
+	ParamFuzz string
+
+	// NTLM: token type3 calculado no primeiro uso (lazy) e reusado.
+	ntlmOnce sync.Once
+	ntlmToken string
 }
 
 func NewFuzzer(client *httpclient.Client, concurrency int) *Fuzzer {
@@ -207,6 +216,15 @@ func (f *Fuzzer) doFuzzWithRetry(targetURL, word, headerName, postData string) *
 func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResult {
 	reqURL := strings.ReplaceAll(targetURL, "FUZZ", word)
 
+	// Param fuzzing: ?param=valor (preserva query string existente).
+	if f.ParamFuzz != "" {
+		sep := "?"
+		if strings.Contains(reqURL, "?") {
+			sep = "&"
+		}
+		reqURL += sep + f.ParamFuzz + "=" + word
+	}
+
 	method := "GET"
 	var bodyReader io.Reader
 	if postData != "" {
@@ -238,6 +256,21 @@ func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResul
 	// Credenciais/cookies/UA configurados no fuzzer.
 	if f.auth != "" {
 		req.SetBasicAuth(f.authUser, f.authPass)
+	}
+	if f.bearer != "" {
+		req.Header.Set("Authorization", "Bearer "+f.bearer)
+	}
+	if f.ntlmCreds != "" {
+		f.ntlmOnce.Do(func() {
+			auth := newNTLM(f.ntlmCreds)
+			auth.client = f.client.HTTP
+			if tok, err := auth.handshake(reqURL); err == nil {
+				f.ntlmToken = tok
+			}
+		})
+		if f.ntlmToken != "" {
+			req.Header.Set("Authorization", f.ntlmToken)
+		}
 	}
 	if f.cookie != "" {
 		req.Header.Set("Cookie", f.cookie)

@@ -17,10 +17,12 @@ import (
 
 // Campos de autenticação/personalização de requisição.
 type FuzzAuth struct {
-	User     string
-	Pass     string
-	Cookie   string
+	User      string
+	Pass      string
+	Cookie    string
 	UserAgent string
+	Bearer    string
+	NTLM      string // user:pass para NTLM
 }
 
 func (f *Fuzzer) SetAuth(auth FuzzAuth) {
@@ -29,6 +31,8 @@ func (f *Fuzzer) SetAuth(auth FuzzAuth) {
 	f.authPass = auth.Pass
 	f.cookie = auth.Cookie
 	f.userAgent = auth.UserAgent
+	f.bearer = auth.Bearer
+	f.ntlmCreds = auth.NTLM
 }
 
 // ExtendFuzz gera as variantes de cada palavra com as extensões dadas
