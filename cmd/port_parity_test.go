@@ -32,6 +32,27 @@ func TestResolveTargetsFromInputList(t *testing.T) {
 	}
 }
 
+// @spec:AC-058 — shorthands nmap -iL/-oX são normalizados antes do parse
+func TestNormalizeNmapFlags(t *testing.T) {
+	cases := []struct {
+		in   []string
+		want []string
+	}{
+		{[]string{"port", "-iL", "alvos.txt"}, []string{"port", "--iL", "alvos.txt"}},
+		{[]string{"port", "-iL=alvos.txt"}, []string{"port", "--iL=alvos.txt"}},
+		{[]string{"port", "-iLalvos.txt"}, []string{"port", "--iL=alvos.txt"}},
+		{[]string{"port", "-oX", "scan.xml"}, []string{"port", "--oX", "scan.xml"}},
+		{[]string{"port", "-oX=scan.xml"}, []string{"port", "--oX=scan.xml"}},
+		{[]string{"port", "127.0.0.1", "--ports", "80"}, []string{"port", "127.0.0.1", "--ports", "80"}},
+	}
+	for _, c := range cases {
+		got := normalizeNmapFlags(c.in)
+		if strings.Join(got, " ") != strings.Join(c.want, " ") {
+			t.Errorf("AC-058: normalizeNmapFlags(%v) = %v, want %v", c.in, got, c.want)
+		}
+	}
+}
+
 // @spec:AC-058 — -iL sozinho (sem alvo posicional) resolve os alvos
 func TestResolveTargetsFromInputListOnly(t *testing.T) {
 	dir := t.TempDir()

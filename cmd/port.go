@@ -23,6 +23,34 @@ var (
 	portOSGuess  bool
 )
 
+// normalizeNmapFlags converte -iL/-oX (shorthands multi-char estilo nmap)
+// em --iL/--oX antes do parse do pflag — o pflag só suporta shorthands de
+// um caractere, então a tradução é feita manualmente nos args.
+func normalizeNmapFlags(args []string) []string {
+	var out []string
+	for i := 0; i < len(args); i++ {
+		a := args[i]
+		switch {
+		case a == "-iL":
+			out = append(out, "--iL")
+		case a == "-oX":
+			out = append(out, "--oX")
+		case strings.HasPrefix(a, "-iL="):
+			out = append(out, "--iL="+strings.TrimPrefix(a, "-iL="))
+		case strings.HasPrefix(a, "-oX="):
+			out = append(out, "--oX="+strings.TrimPrefix(a, "-oX="))
+		case strings.HasPrefix(a, "-iL") && len(a) > 3:
+			// -iLvalor (sem espaço)
+			out = append(out, "--iL="+a[3:])
+		case strings.HasPrefix(a, "-oX") && len(a) > 3:
+			out = append(out, "--oX="+a[3:])
+		default:
+			out = append(out, a)
+		}
+	}
+	return out
+}
+
 var portCmd = &cobra.Command{
 	Use:   "port <ip/cidr>",
 	Short: "TCP/UDP port scanner",
@@ -251,6 +279,9 @@ func init() {
 	portCmd.Flags().StringVar(&portList, "ports", "", "comma-separated port list")
 	portCmd.Flags().IntVar(&portTop, "top", 1000, "scan top N common ports")
 	portCmd.Flags().BoolVar(&portUDP, "udp", false, "scan UDP ports")
+	// Shorthands estilo nmap: -iL e -oX são multi-caractere; o pflag não os
+	// suporta nativamente, então normalizeNmapFlags os traduz em --iL/--oX
+	// antes do parse (feito em cmd/root.go Execute).
 	portCmd.Flags().StringVar(&portInputL, "iL", "", "file with one target per line (IPs or CIDRs)")
 	portCmd.Flags().BoolVar(&portPing, "ping-sweep", false, "discover live hosts before scanning (TCP probe)")
 	portCmd.Flags().IntVar(&portRetries, "retries", 0, "extra attempts per port before marking closed")

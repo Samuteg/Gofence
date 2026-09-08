@@ -31,7 +31,10 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Execute é o ponto de entrada: normaliza shorthands multi-caractere
+// estilo nmap (-iL/-oX) em flags longas antes do parse do pflag.
 func Execute() error {
+	rootCmd.SetArgs(normalizeNmapFlags(os.Args[1:]))
 	return rootCmd.Execute()
 }
 

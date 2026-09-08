@@ -179,7 +179,7 @@ gofence port 10.0.0.5 --udp --top 100
 # CIDR inteiro — expandido host a host
 gofence port 10.0.0.0/24 --top 1000
 
-# Lista de alvos em arquivo (-iL; CIDRs do arquivo também são expandidos)
+# Lista de alvos em arquivo (-iL estilo nmap; CIDRs do arquivo também são expandidos)
 gofence port -iL alvos.txt --top 1000
 
 # Ping sweep antes de varrer (descobre hosts vivos)
@@ -194,7 +194,7 @@ gofence port 10.0.0.5 --syn --ports 22,80,443
 # Palpite de SO por sinais TCP (TTL/janela heurísticos por serviço)
 gofence port 10.0.0.5 --ports 22,3389 --os-guess
 
-# Saída XML compatível com nmap -oX (Metasploit/Faraday)
+# Saída XML compatível com nmap -oX (Metasploit/Faraday) — shorthand estilo nmap
 gofence port 10.0.0.5 --top 1000 -oX scan.xml
 ```
 
