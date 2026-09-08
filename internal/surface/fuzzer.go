@@ -5,10 +5,12 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/nixteg/gofence/internal/ux"
 	"github.com/nixteg/gofence/pkg/httpclient"
@@ -21,6 +23,7 @@ type FuzzResult struct {
 	Size       int64  `json:"size"`
 	Header     string `json:"header,omitempty"`
 	WAF        bool   `json:"waf,omitempty"`
+	Wildcard   bool   `json:"wildcard,omitempty"`
 }
 
 type Fuzzer struct {
@@ -28,7 +31,21 @@ type Fuzzer struct {
 	Concurrency  int
 	WAF          *ux.WAFDetector
 	IgnoreStatus []int
+	StatusCodes  []int
+	ExcludeSize  []int64
+	Retries      int
 	Limiter      *rate.Limiter
+
+	// Wildcard detection: requisição de referência com path aleatório.
+	WildcardBase string // base URL usada para detectar página curinga
+	wildcardHits int
+
+	// Auth/personalização de requisição (SetAuth).
+	auth      string
+	authUser  string
+	authPass  string
+	cookie    string
+	userAgent string
 }
 
 func NewFuzzer(client *httpclient.Client, concurrency int) *Fuzzer {
@@ -47,6 +64,41 @@ func (f *Fuzzer) ignore(code int) bool {
 	return false
 }
 
+func (f *Fuzzer) inStatusWhitelist(code int) bool {
+	if len(f.StatusCodes) == 0 {
+		return true
+	}
+	for _, s := range f.StatusCodes {
+		if s == code {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *Fuzzer) inExcludeSize(size int64) bool {
+	for _, s := range f.ExcludeSize {
+		if s == size {
+			return true
+		}
+	}
+	return false
+}
+
+// detectWildcard faz uma requisição de referência com path aleatório e guarda
+// status+size. Respostas iguais à referência são descartadas (página curinga).
+func (f *Fuzzer) detectWildcard(targetURL string) (int, int64, bool) {
+	randomPath := fmt.Sprintf("gofence-wildcard-%d", rand.Intn(1<<30))
+	reqURL := strings.ReplaceAll(targetURL, "FUZZ", randomPath)
+	resp, err := f.client.HTTP.Get(reqURL)
+	if err != nil {
+		return 0, 0, false
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	return resp.StatusCode, int64(len(body)), true
+}
+
 func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerName, postData string) (<-chan FuzzResult, error) {
 	file, err := os.Open(wordlistPath)
 	if err != nil {
@@ -60,6 +112,15 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 	go func() {
 		defer file.Close()
 		defer close(results)
+
+		// Wildcard: descobre a referência antes da onda.
+		wildcardStatus, wildcardSize, hasWildcard := 0, int64(0), false
+		if f.WildcardBase != "" || strings.Contains(targetURL, "FUZZ") {
+			wildcardStatus, wildcardSize, hasWildcard = f.detectWildcard(targetURL)
+			if hasWildcard {
+				fmt.Fprintf(os.Stderr, "wildcard detected: %d with size %d; matching responses will be discarded\n", wildcardStatus, wildcardSize)
+			}
+		}
 
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
@@ -84,16 +145,32 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 						return
 					}
 				}
-				res := f.doFuzz(targetURL, word, headerName, postData)
-				if res != nil {
-					results <- *res
+				res := f.doFuzzWithRetry(targetURL, word, headerName, postData)
+				if res == nil {
+					return
 				}
+				if hasWildcard && res.StatusCode == wildcardStatus && res.Size == wildcardSize {
+					res.Wildcard = true
+				}
+				results <- *res
 			}(word)
 		}
 		wg.Wait()
 	}()
 
 	return results, nil
+}
+
+func (f *Fuzzer) doFuzzWithRetry(targetURL, word, headerName, postData string) *FuzzResult {
+	attempts := f.Retries + 1
+	for i := 0; i < attempts; i++ {
+		res := f.doFuzz(targetURL, word, headerName, postData)
+		if res != nil || i == attempts-1 {
+			return res
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+	return nil
 }
 
 func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResult {
@@ -112,12 +189,30 @@ func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResul
 		return nil
 	}
 
+	var fuzzHeaderVal string
 	if headerName != "" {
 		parts := strings.SplitN(headerName, ":", 2)
 		if len(parts) == 2 {
 			val := strings.ReplaceAll(strings.TrimSpace(parts[1]), "FUZZ", word)
-			req.Header.Set(strings.TrimSpace(parts[0]), val)
+			name := strings.TrimSpace(parts[0])
+			if strings.EqualFold(name, "Host") {
+				req.Host = val // Host não vai em Header: é o campo req.Host
+			} else {
+				req.Header.Set(name, val)
+			}
+			fuzzHeaderVal = name + ": " + val
 		}
+	}
+
+	// Credenciais/cookies/UA configurados no fuzzer.
+	if f.auth != "" {
+		req.SetBasicAuth(f.authUser, f.authPass)
+	}
+	if f.cookie != "" {
+		req.Header.Set("Cookie", f.cookie)
+	}
+	if f.userAgent != "" {
+		req.Header.Set("User-Agent", f.userAgent)
 	}
 
 	resp, err := f.client.HTTP.Do(req)
@@ -126,21 +221,30 @@ func (f *Fuzzer) doFuzz(targetURL, word, headerName, postData string) *FuzzResul
 	}
 	defer resp.Body.Close()
 
+	// Whitelist de status: quando presente, só esses aparecem.
+	if !f.inStatusWhitelist(resp.StatusCode) {
+		return nil
+	}
 	if resp.StatusCode == 404 || f.ignore(resp.StatusCode) {
 		return nil
 	}
 
 	body, _ := io.ReadAll(resp.Body)
+	size := int64(len(body))
+	if f.inExcludeSize(size) {
+		return nil
+	}
 
 	if f.WAF != nil {
 		if detected, _ := f.WAF.Hit(resp.StatusCode, body); detected {
-			return &FuzzResult{URL: reqURL, StatusCode: resp.StatusCode, Size: int64(len(body)), WAF: true}
+			return &FuzzResult{URL: reqURL, StatusCode: resp.StatusCode, Size: size, Header: fuzzHeaderVal, WAF: true}
 		}
 	}
 
 	return &FuzzResult{
 		URL:        reqURL,
 		StatusCode: resp.StatusCode,
-		Size:       int64(len(body)),
+		Size:       size,
+		Header:     fuzzHeaderVal,
 	}
 }
