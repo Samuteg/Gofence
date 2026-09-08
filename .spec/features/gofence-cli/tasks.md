@@ -47,8 +47,8 @@
 ## T-008 — DNS brute-force e AXFR [concluida]
 
 - Refs: US-001, AC-001, AC-002, AC-003
-- Arquivos: internal/recon/dns.go, cmd/dns.go, internal/assets/assets.go
-- Notas: Goroutines com semáforo (concurrency flag). AXFR via miekg/dns. STDOUT: subdomínio + IP. Wordlist embutida (subdomains.txt via go:embed) ou via flag -w
+- Arquivos: internal/recon/dns.go, internal/recon/dns_nameserver_test.go, cmd/dns.go, internal/assets/assets.go
+- Notas: Goroutines com semáforo (concurrency flag). AXFR via miekg/dns. STDOUT: subdomínio + IP. Wordlist embutida (subdomains.txt via go:embed) ou via flag -w. Nameserver configurável via flag --nameserver (host:porta) para o brute-force — testado com DNS fake em memória
 
 ## T-009 — OSINT clients [concluida]
 

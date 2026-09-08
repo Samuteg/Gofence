@@ -27,6 +27,9 @@ var dnsCmd = &cobra.Command{
 			return err
 		}
 		resolver := recon.NewResolver(concur)
+		if dnsNS != "" {
+			resolver.Nameserver = dnsNS
+		}
 
 		db, wsID := openWorkspace()
 		guard, err := mustScope(db, wsID)

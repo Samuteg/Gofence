@@ -18,7 +18,10 @@ type DNSResult struct {
 
 type Resolver struct {
 	Concurrency int
-	client      *dns.Client
+	// Nameserver é o servidor DNS usado nas resoluções (host:porta).
+	// Default 8.8.8.8:53; configurável via flag --nameserver.
+	Nameserver string
+	client     *dns.Client
 }
 
 func NewResolver(concurrency int) *Resolver {
@@ -27,6 +30,7 @@ func NewResolver(concurrency int) *Resolver {
 	}
 	return &Resolver{
 		Concurrency: concurrency,
+		Nameserver:  "8.8.8.8:53",
 		client:      &dns.Client{Timeout: 5 * time.Second},
 	}
 }
@@ -87,7 +91,11 @@ func (r *Resolver) detectWildcard(domain string) string {
 func (r *Resolver) resolveA(name string) string {
 	msg := new(dns.Msg)
 	msg.SetQuestion(dns.Fqdn(name), dns.TypeA)
-	resp, _, err := r.client.Exchange(msg, "8.8.8.8:53")
+	ns := r.Nameserver
+	if ns == "" {
+		ns = "8.8.8.8:53"
+	}
+	resp, _, err := r.client.Exchange(msg, ns)
 	if err != nil || resp == nil {
 		return ""
 	}
