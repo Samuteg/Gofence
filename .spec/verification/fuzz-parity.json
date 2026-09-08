@@ -1,11 +1,11 @@
 {
   "feature": "fuzz-parity",
-  "timestamp": "2026-09-08T01:32:04.335Z",
-  "gitRev": "31f5454",
+  "timestamp": "2026-09-08T01:35:11.522Z",
+  "gitRev": "27d0fe7",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 85,
+  "testsParsed": 86,
   "results": {
     "AC-047": {
       "status": "pass",
