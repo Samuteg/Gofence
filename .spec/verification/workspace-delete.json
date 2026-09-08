@@ -1,11 +1,11 @@
 {
   "feature": "workspace-delete",
-  "timestamp": "2026-09-08T01:35:09.991Z",
-  "gitRev": "27d0fe7",
+  "timestamp": "2026-09-08T01:39:48.551Z",
+  "gitRev": "886ad9e",
   "command": "go test -json ./... | python3 .spec/go-tap.py",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 86,
+  "testsParsed": 88,
   "results": {
     "AC-043": {
       "status": "pass",
