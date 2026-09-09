@@ -5,3 +5,5 @@ gofence.db
 *.db-journal
 /tmp/
 coverage.out
+gofence-v*
+*.tar.gz
