@@ -75,9 +75,11 @@ var reportCmd = &cobra.Command{
 				"hosts":        hosts,
 				"findings":     findings,
 			}
-			if j, err := json.MarshalIndent(payload, "", "  "); err == nil {
-				out = string(j) + "\n"
+			j, err := json.MarshalIndent(payload, "", "  ")
+			if err != nil {
+				return fmt.Errorf("marshal json report: %w", err)
 			}
+			out = string(j) + "\n"
 		}
 
 		if reportOut != "" {

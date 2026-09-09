@@ -7,7 +7,7 @@ SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
 (pipeline UNIX) e persistência de achados por workspace.
 
 > ⚠️ **Uso autorizado apenas.** Esta ferramenta destina-se a testes de intrusão
-> com autorização explícita (escopo contratado). O módulo de ScopeGuard bloqueia
+> com autorização explícita (escopo contratado). O módulo ScopeGuard bloqueia
 > qualquer operação de rede fora do CIDR declarado no workspace.
 
 ---
@@ -15,9 +15,11 @@ SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
 ## Índice
 
 - [Instalação](#instalação)
+- [Início rápido](#início-rápido)
 - [Visão geral dos comandos](#visão-geral-dos-comandos)
 - [Flags globais](#flags-globais)
 - [Configuração](#configuração)
+- [Referência de comandos](#referência-de-comandos)
 - [Pilar 1 — Coleta e Recon](#pilar-1--coleta-e-recon)
 - [Pilar 2 — Superfície e Vulnerabilidades](#pilar-2--superfície-e-vulnerabilidades)
 - [Pilar 3 — Exploração e Helpers](#pilar-3--exploração-e-helpers)
@@ -26,6 +28,7 @@ SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
 - [Exemplos de fluxo (pipeline)](#exemplos-de-fluxo-pipeline)
 - [Banco de dados (SQLite)](#banco-de-dados-sqlite)
 - [Desenvolvimento e testes](#desenvolvimento-e-testes)
+- [Observações de segurança](#observações-de-segurança)
 
 ---
 
@@ -33,7 +36,7 @@ SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
 
 ### Pré-requisitos
 
-- Go 1.22+ (testado em 1.26.5)
+- Go 1.25+ (go.mod exige 1.25.0)
 - Acesso de rede conforme o alvo autorizado
 
 ### Build a partir do código-fonte
@@ -41,22 +44,49 @@ SQLite, wordlists/templates embutidos, modos interativo (TUI) e headless
 ```bash
 git clone <repo> gofence
 cd gofence
+
+# Build simples
 go build -o gofence .
+
+# Build estático portátil (recomendado; sem CGO, qualquer Linux amd64/arm64)
+make static
+# equivalente a: CGO_ENABLED=0 go build -ldflags '-s -w' -o gofence .
+
+# Build com versão/commit injetados (mostrados no gofence --version)
+make build
 ```
 
-### Build estático (sem CGO, binário portátil)
-
-```bash
-CGO_ENABLED=0 go build -ldflags '-s -w' -o gofence .
-```
-
-> O projeto usa `modernc.org/sqlite` (pure Go) — **nenhuma dependência de CGO**,
-> então o binário estático funciona em qualquer Linux amd64/arm64.
+> O projeto usa `modernc.org/sqlite` (pure Go) — **nenhuma dependência de CGO**.
 
 ### Verificar instalação
 
 ```bash
 ./gofence --help
+./gofence --version    # gofence version <tag> (commit <sha>)
+```
+
+---
+
+## Início rápido
+
+Todo comando de rede exige um workspace com escopo (fail-closed):
+
+```bash
+# 1. Criar e ativar workspace
+gofence workspace new "Cliente X"
+gofence workspace scope "Cliente X" 10.0.0.0/8
+gofence workspace set-active "Cliente X"
+
+# 2. Recon
+gofence dns alvo.com                       # subdomínios (wordlist embutida)
+gofence port 10.0.0.0/24 --top 1000        # portas
+
+# 3. Superfície
+gofence tls alvo.com:443                   # certificado/cifras (JSON)
+gofence fuzz https://alvo.com/FUZZ         # diretórios (wordlist embutida)
+
+# 4. Relatório
+gofence report --format md --out relatorio.md
 ```
 
 ---
@@ -66,37 +96,52 @@ CGO_ENABLED=0 go build -ldflags '-s -w' -o gofence .
 | Comando | Descrição |
 |---------|-----------|
 | `gofence` (sem args) | Abre a TUI (se stdout for um terminal) |
+| `gofence --version` | Versão e commit (injetados via ldflags) |
 | `gofence dns <alvo>` | Brute-force de subdomínios e transferência de zona (AXFR) |
-| `gofence osint <alvo>` | Consulta APIs Shodan, Censys e SecurityTrails |
-| `gofence port <ip/cidr>` | Varredura TCP/UDP de portas |
-| `gofence fuzz <url>` | Fuzzer web de caminhos, cabeçalhos e POST |
+| `gofence subdomains <domain>` | Resolução de subdomínios via wordlist (estilo gobuster dns) |
+| `gofence osint <alvo>` | Consulta Shodan, Censys, SecurityTrails + providers keyless |
+| `gofence port <ip/cidr>` | Varredura TCP/UDP com banners, NSE-lite, SYN e XML |
+| `gofence fuzz <url>` | Fuzzer web de caminhos, headers e POST |
+| `gofence s3 [placeholder]` | Enumeração de buckets S3 (existência + visibilidade) |
+| `gofence vhost <url>` | Descoberta de virtual hosts via Host header |
 | `gofence tls <host:porta>` | Análise de certificado TLS e cifras |
-| `gofence crawl <url>` | Crawler AST com detecção de segredos |
-| `gofence vulns <alvo>` | Executa templates de vulnerabilidade (formato Nuclei) |
+| `gofence crawl <url>` | Crawler com detecção de segredos |
+| `gofence vulns <alvo>` | Templates de vulnerabilidade (formato Nuclei) |
 | `gofence payload` | Gera payloads de reverse/bind shell |
-| `gofence listen [porta]` | Multi-handler para conexões reversas |
-| `gofence brute <ssh\|http\|ftp>` | Brute force de dicionário (ssh/http/ftp) |
+| `gofence listen [porta]` | Multi-handler interativo para conexões reversas |
+| `gofence brute <ssh\|http\|ftp>` | Brute force de dicionário |
 | `gofence workspace` | Gerencia workspaces, escopo e workspace ativo |
-| `gofence report` | Agrega hosts/ports/findings do workspace em Markdown/JSON |
+| `gofence report` | Agrega hosts/ports/findings em Markdown/JSON |
+
+📖 **Documentação detalhada de cada comando** (flags, exemplos, comportamento
+de saída e persistência): [docs/COMMANDS.md](./docs/COMMANDS.md)
 
 ---
 
 ## Flags globais
 
-Aplicam-se a todos os comandos (definidas no root):
+Aplicam-se a todos os comandos. Precedência: **flag CLI > env `GOFENCE_*` >
+`~/.gofence/config.yaml` > padrões**.
 
 | Flag | Padrão | Descrição |
 |------|--------|-----------|
 | `--config <arquivo>` | `~/.gofence/config.yaml` | Arquivo de configuração YAML |
 | `--no-tui` | `false` | Força modo headless (desativa TUI) |
 | `--json` | `false` | Força saída JSON no STDOUT |
-| `--rate <perfil>` | `normal` | Perfil de rate limit: `sneaky`\|`normal`\|`aggressive` |
-| `--concurrency <n>` | `100` | Máximo de goroutines simultâneas |
-| `--db <caminho>` | `~/.gofence/gofence.db` | Caminho do banco SQLite |
-| `--workspace <nome>` | _(workspace ativo salvo)_ | Workspace para persistência (sobrescreve o ativo) |
+| `--rate <perfil>` | config (`normal`) | `sneaky`\|`normal`\|`aggressive` |
+| `--concurrency <n>` | config (`100`) | Máximo de goroutines simultâneas |
+| `--db <caminho>` | config (`~/.gofence/gofence.db`) | Caminho do banco SQLite |
+| `--workspace <nome>` | _(workspace ativo salvo)_ | Workspace para persistência |
 
-**Ordem de precedência da configuração:**
-`flags CLI` > `env GOFENCE_*` > `~/.gofence/config.yaml` > padrões.
+> 🔒 **TLS:** a verificação de certificado vem **ativada** por padrão
+> (`tls_skip_verify: false`). Para alvos com TLS quebrado/self-signed, defina
+> `GOFENCE_TLS_SKIP_VERIFY=true` ou `tls_skip_verify: true` no config.
+
+Env vars disponíveis: `GOFENCE_SHODAN_KEY`, `GOFENCE_CENSYS_ID`,
+`GOFENCE_CENSYS_SECRET`, `GOFENCE_SECURITYTRAILS_KEY`, `GOFENCE_RATE_PROFILE`,
+`GOFENCE_CONCURRENCY`, `GOFENCE_DB_PATH`, `GOFENCE_NO_TUI`,
+`GOFENCE_JSON_OUTPUT`, `GOFENCE_WORDLIST_PATH`, `GOFENCE_PROXY_URL`,
+`GOFENCE_TLS_SKIP_VERIFY`.
 
 ---
 
@@ -109,23 +154,39 @@ shodan_key: "SUA_CHAVE_SHODAN"
 censys_id: "SEU_CENSYS_ID"
 censys_secret: "SEU_CENSYS_SECRET"
 securitytrails_key: "SUA_CHAVE_SECURITYTRAILS"
-rate_profile: "normal"      # sneaky | normal | aggressive
+rate_profile: "normal"        # sneaky | normal | aggressive
 concurrency: 100
 db_path: "~/.gofence/gofence.db"
-tls_skip_verify: true       # ignora certificados TLS inválidos
+proxy_url: ""                 # proxy HTTP para todos os módulos web
+tls_skip_verify: false        # padrão seguro; true só para alvos com TLS quebrado
 ```
 
 Ou via ambiente:
 
 ```bash
 export GOFENCE_SHODAN_KEY="SUA_CHAVE_SHODAN"
-export GOFENCE_CENSYS_ID="..."
-export GOFENCE_CENSYS_SECRET="..."
-export GOFENCE_SECURITYTRAILS_KEY="..."
+export GOFENCE_PROXY_URL="http://127.0.0.1:8080"   #roteia fuzz/crawl/vulns via Burp/ZAP
+export GOFENCE_TLS_SKIP_VERIFY=true                #lab/self-signed
 ```
 
-> **Segurança:** chaves nunca devem ser hard-coded (princípio P-002 da
-> constituição). Use sempre env vars ou arquivo de configuração fora do repo.
+> **Segurança:** chaves nunca devem ser hard-coded. Use env vars ou arquivo de
+> configuração fora do repo.
+
+---
+
+## Referência de comandos
+
+A documentação completa de cada comando — flags, exemplos, formato de saída e
+comportamento de persistência — está em **[docs/COMMANDS.md](./docs/COMMANDS.md)**.
+
+Resumo por pilar:
+
+| Pilar | Comandos |
+|-------|----------|
+| Recon | `dns`, `subdomains`, `osint`, `port` |
+| Superfície | `fuzz`, `s3`, `vhost`, `tls`, `crawl`, `vulns` |
+| Exploração | `payload`, `listen`, `brute` |
+| Dados | `workspace`, `report` |
 
 ---
 
@@ -150,6 +211,15 @@ gofence dns alvo.com --axfr --nameserver ns1.alvo.com
 Saída (STDOUT, uma por linha): `subdominio IP`. AXFR imprime JSON.
 Quando há workspace ativo, os subdomínios são persistidos como findings
 (`info/subdomain`) e o total vai para o STDERR.
+
+### `subdomains` — Resolução dedicada de subdomínios
+
+Equivalente ao `fuzz --dns`, como comando próprio (estilo `gobuster dns`),
+com detecção de wildcard DNS e escopo checado por IP resolvido:
+
+```bash
+gofence subdomains alvo.com -w subs.txt --nameserver 1.1.1.1:53
+```
 
 ### `osint` — Inteligência de fontes externas
 
@@ -243,19 +313,16 @@ gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --recursive --depth 3
 # Extensões automáticas (-x): testa index.php, index.html...
 gofence fuzz https://alvo.com/FUZZ -w wordlist.txt -x php,html
 
-# Modo vhost: fuzza Host header e filtra respostas iguais à base
-gofence fuzz https://alvo.com/ -w hosts.txt --vhost
-
 # Seeds de robots.txt/sitemap.xml
-#gofence fuzz https://alvo.com/FUZZ --robots
-#gofence fuzz https://alvo.com/FUZZ --sitemap
+gofence fuzz https://alvo.com/FUZZ --robots
+gofence fuzz https://alvo.com/FUZZ --sitemap
 
 # Resume: salvar estado e continuar depois
-#gofence fuzz https://alvo.com/FUZZ -w wordlist.txt -o estado.json
-#gofence fuzz https://alvo.com/FUZZ --resume estado.json
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt -o estado.json
+gofence fuzz https://alvo.com/FUZZ --resume estado.json
 
 # Auth, cookie e User-Agent
-#gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --auth admin:secret --cookie "session=abc" --user-agent "gofence/1.0"
+gofence fuzz https://alvo.com/FUZZ -w wordlist.txt --auth admin:secret --cookie "session=abc" --user-agent "gofence/1.0"
 ```
 
 Imprime no STDOUT apenas respostas com status ≠ 404: `[status] url (size: N)`.
@@ -267,6 +334,24 @@ para o STDERR com sugestão de `--rate sneaky`. Erros de conexão transientes
 são retentados (`--retries`, padrão 2). Progresso/ETA aparecem no STDERR
 (`--progress`, padrão ligado; STDOUT permanece puro para pipelines).
 Achados são persistidos no workspace ativo (`info/fuzz <status>`).
+
+### `s3` — Enumeração de buckets S3
+
+```bash
+gofence s3 probe -w buckets.txt
+gofence s3 probe -w buckets.txt --json | jq 'map(select(.private))'
+```
+
+`200/301` = existe (público), `403` = existe (privado), `404` = não existe.
+Buckets expostos persistem como `medium/open s3 bucket`.
+
+### `vhost` — Descoberta de virtual hosts
+
+```bash
+gofence vhost https://alvo.com/ -w vhosts.txt
+```
+
+Fuzza o header `Host` e descarta respostas idênticas à base (vhost default).
 
 ### `tls` — Análise de certificado
 
@@ -354,12 +439,17 @@ O payload é impresso no STDOUT (cole no alvo).
 gofence listen 4444
 
 # UDP
-gofence listen --proto udp 4444
+gofence listen --proto udp 5555
 ```
 
 - Aceita múltiplas sessões simultâneas (gerenciadas em `sync.Map`)
-- Decodifica payloads Base64/XOR na recepção
-- Log de novas sessões no STDERR
+- Decodifica payloads Base64 na recepção
+- Log de novas sessões no STDOUT
+
+**Console interativo** (stdin é TTY): `sessions` lista as conexões ativas,
+`send <id> <dados>` envia dados para uma sessão e `kill <id>` encerra uma.
+`Ctrl+C` faz shutdown gracioso (fecha listener e sessões). Em pipe, roda em
+modo servidor puro.
 
 ### `brute` — Engine de brute force
 
@@ -379,6 +469,9 @@ gofence brute ssh 10.0.0.5 -u admin -w senhas.txt --no-backoff
 
 > Backoff exponencial após 5 falhas (previne lockout do alvo). Use
 > `--no-backoff` apenas quando o alvo não tiver proteção.
+
+Credenciais encontradas são persistidas no workspace ativo
+(`high/brute <service> credential`).
 
 ---
 
@@ -462,11 +555,12 @@ STDOUT reservado para dados puros (JSON quando detectado não-TTY ou `--json`);
 STDERR para logs, barras de progresso e alertas (inclui `persisted N ...`
 e avisos de WAF).
 
-Comandos com alvo (`dns`, `osint`, `port`, `fuzz`, `tls`, `crawl`, `vulns`,
-`brute`) aceitam o alvo via pipe quando o argumento é omitido: vale a
-primeira linha do stdin (primeiro campo), e linhas extras geram aviso no
-STDERR. O argumento explícito tem prioridade; sem nenhum dos dois, o comando
-pede o alvo e sai com erro. A checagem de escopo vale para alvos do pipe.
+Comandos com alvo (`dns`, `subdomains`, `osint`, `port`, `fuzz`, `tls`,
+`crawl`, `vulns`, `brute`) aceitam o alvo via pipe quando o argumento é
+omitido: vale a primeira linha do stdin (primeiro campo), e linhas extras
+geram aviso no STDERR. O argumento explícito tem prioridade; sem nenhum dos
+dois, o comando pede o alvo e sai com erro. A checagem de escopo vale para
+alvos do pipe.
 
 ```bash
 # Pipe direto: DNS → Port (primeiro alvo do stdin)
@@ -475,6 +569,13 @@ gofence dns alvo.com -w sub.txt | gofence port --top 100
 # TLS sempre sai em JSON — bom para jq
 gofence tls alvo.com:443 | jq '.subject'
 ```
+
+### Cancelamento (Ctrl+C)
+
+Todos os comandos de longa duração escutam SIGINT/SIGTERM: a onda para de
+enfileirar trabalho, as requisições em voo terminam e os recursos (temp
+files, estado de resume) são liberados pelos `defer` — em vez de morrer no
+meio do scan.
 
 ### Rate Limiting (evasão)
 
@@ -533,6 +634,13 @@ gofence listen 4444
 gofence payload --type python --ip 10.0.0.1 --port 4444
 ```
 
+### Enumeração de cloud
+
+```bash
+gofence s3 probe -w buckets.txt --json | jq 'map(select(.private == true))'
+gofence vhost https://alvo.com/ -w vhosts.txt --json
+```
+
 ---
 
 ## Desenvolvimento e testes
@@ -542,6 +650,7 @@ gofence payload --type python --ip 10.0.0.1 --port 4444
 ```
 gofence/
 ├── cmd/            # Comandos Cobra (entry points) + helpers.go/report.go
+├── docs/           # Referência de comandos (COMMANDS.md)
 ├── internal/
 │   ├── assets/     # Wordlists e templates embutidos (go:embed)
 │   ├── recon/      # DNS, OSINT, port scan
@@ -557,13 +666,19 @@ gofence/
 ### Rodar testes
 
 ```bash
-go test ./...
-go test ./internal/surface
-go test -v ./internal/surface -run TestFuzzer
+go test ./...                                  # suíte completa
+go test -race ./...                            # com detector de data race
+go test ./internal/surface                     # pacote único
+go test -v ./internal/surface -run TestFuzzer  # teste focado
 ```
 
-`go vet ./...` tem avisos conhecidos de formatação IPv6 em
-`internal/recon/portscan.go`.
+`make vet` roda `go vet ./...` (deve estar limpo — endereços IPv6 sempre via
+`net.JoinHostPort`). `make static` produz o binário portátil sem CGO.
+
+### CI
+
+GitHub Actions (`.github/workflows/ci.yml`) roda em todo push/PR:
+`go vet`, `go test -race`, build estático CGO-free e smoke test (`--version`).
 
 ### Auditoria da especificação (onp-spec)
 
@@ -585,8 +700,8 @@ node <dir-skill>/scripts/onp-spec.mjs audit --ci
 
 - O ScopeGuard é uma **camada de proteção**, não uma desculpa: confirme sempre
   o escopo por escrito antes de qualquer teste.
-- O binário ignora certificados TLS inválidos por padrão (`tls_skip_verify:
-  true`) — adequado para lab, mas revise em produção.
+- A verificação de certificado TLS vem **ativada** por padrão; desative
+  (`GOFENCE_TLS_SKIP_VERIFY=true`) apenas em lab ou alvos com TLS quebrado.
 - Nenhum exploit zero-day ou payload ofensivo é embutido; o `payload` gera
   apenas one-liners de shell reverso/bind para operações autorizadas.
 

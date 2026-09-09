@@ -8,6 +8,7 @@ import (
 	"github.com/nixteg/gofence/internal/assets"
 	"github.com/nixteg/gofence/internal/data"
 	"github.com/nixteg/gofence/internal/recon"
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +27,7 @@ var dnsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		resolver := recon.NewResolver(concur)
+		resolver := recon.NewResolver(effConcurrency())
 		if dnsNS != "" {
 			resolver.Nameserver = dnsNS
 		}
@@ -86,17 +87,25 @@ var dnsCmd = &cobra.Command{
 		}
 
 		var persisted int
+		var inScope []recon.DNSResult
 		for _, r := range results {
 			if !data.CheckHost(guard, r.IP, "dns") {
 				continue
 			}
 			fmt.Printf("%s %s\n", r.Subdomain, r.IP)
+			inScope = append(inScope, r)
 			if err := db.SaveFinding(wsID, r.IP, r.Subdomain, "info",
 				"subdomain", fmt.Sprintf("domain=%s", domain)); err == nil {
 				persisted++
 			}
 		}
 		fmt.Fprintf(os.Stderr, "persisted %d subdomains to workspace\n", persisted)
+		if jsonOut {
+			if err := ux.PrintJSON(inScope); err != nil {
+				db.Close()
+				return err
+			}
+		}
 		db.Close()
 		return nil
 	},

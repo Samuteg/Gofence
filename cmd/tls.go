@@ -8,6 +8,7 @@ import (
 
 	"github.com/nixteg/gofence/internal/data"
 	"github.com/nixteg/gofence/internal/surface"
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/spf13/cobra"
 )
 
@@ -40,8 +41,19 @@ var tlsCmd = &cobra.Command{
 			return err
 		}
 
-		out, _ := json.MarshalIndent(info, "", "  ")
-		fmt.Println(string(out))
+		// TLS sempre sai como JSON (estrutura complexa); --json suprime o
+		// texto decorado e grava direto em stdout puro.
+		if jsonOut {
+			if err := ux.PrintJSON(info); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
+			}
+		} else {
+			out, _ := json.MarshalIndent(info, "", "  ")
+			fmt.Println(string(out))
+		}
 
 		if db != nil {
 			hostname := strings.Split(host, ":")[0]

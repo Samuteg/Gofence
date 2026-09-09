@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 	"strings"
 
-	"github.com/nixteg/gofence/internal/config"
 	"github.com/nixteg/gofence/internal/data"
 	"github.com/nixteg/gofence/internal/ux"
 )
@@ -15,11 +13,8 @@ import (
 // when persistence is unavailable (no DB or no active workspace) so callers can
 // skip saving findings gracefully instead of failing the whole scan.
 func openWorkspace() (*data.DB, int64) {
-	dbPath := dbPath
-	if dbPath == "" {
-		dbPath = config.Get().DBPath
-	}
-	db, err := data.New(dbPath)
+	p := effDBPath()
+	db, err := data.New(p)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "warn: cannot open db (%v); findings not persisted\n", err)
 		return nil, 0
@@ -75,13 +70,11 @@ func stdinTarget(args []string) (string, error) {
 	return target, nil
 }
 
+// hostOf extrai host[:porta] de um alvo que pode ser URL ou host nu.
+// Canonical: mesma semântica de data.HostOf (usada pelo scope), mantida aqui
+// para os formatadores de saída.
 func hostOf(target string) string {
-	if strings.HasPrefix(target, "http://") || strings.HasPrefix(target, "https://") {
-		if u, err := url.Parse(target); err == nil {
-			return u.Host
-		}
-	}
-	return target
+	return data.HostOf(target)
 }
 
 func writeTempWordlist(words []string, name string) (string, error) {

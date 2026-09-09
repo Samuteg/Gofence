@@ -160,11 +160,17 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 		}
 
 		scanner := bufio.NewScanner(file)
+	scanLoop:
 		for scanner.Scan() {
+			// Cancelação (SIGINT/SIGTERM): para de enfileirar novas palavras e
+			// espera as goroutines em voo terminarem (wg.Wait no final).
+			if ctx.Err() != nil {
+				break scanLoop
+			}
 			// WAF wall: stop the wave and back off instead of hammering.
 			if f.WAF != nil && f.WAF.Triggered() {
 				fmt.Fprintf(os.Stderr, "WAF detected (%s): pausing fuzz wave\n", f.WAF.Signature())
-				break
+				break scanLoop
 			}
 			word := strings.TrimSpace(scanner.Text())
 			if word == "" {
@@ -172,7 +178,12 @@ func (f *Fuzzer) FuzzWeb(ctx context.Context, targetURL, wordlistPath, headerNam
 			}
 
 			wg.Add(1)
-			sem <- struct{}{}
+			select {
+			case sem <- struct{}{}:
+			case <-ctx.Done():
+				wg.Done()
+				break scanLoop
+			}
 			go func(word string) {
 				defer wg.Done()
 				defer func() { <-sem }()

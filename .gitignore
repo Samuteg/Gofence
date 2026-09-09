@@ -1,3 +1,4 @@
+gofence
 gofence.db
 *.db-wal
 *.db-shm

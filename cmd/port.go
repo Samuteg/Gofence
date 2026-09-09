@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/nixteg/gofence/internal/recon"
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/spf13/cobra"
 )
 
@@ -85,7 +86,7 @@ var portCmd = &cobra.Command{
 		}
 
 		timeout := time.Duration(portTimeoutS * float64(time.Second))
-		scanner := recon.NewPortScanner(concur, timeout)
+		scanner := recon.NewPortScanner(effConcurrency(), timeout)
 		scanner.Retries = portRetries
 
 		var ports []int
@@ -112,7 +113,7 @@ var portCmd = &cobra.Command{
 				results = append(results, scanner.ScanUDP(t, recon.TopUDPPorts(portTop))...)
 			}
 		} else if portSyn {
-			synScanner := recon.NewSynScanner(concur, timeout)
+			synScanner := recon.NewSynScanner(effConcurrency(), timeout)
 			for _, t := range targets {
 				synResults, serr := synScanner.ScanSYN(t, ports)
 				if serr != nil {
@@ -164,7 +165,16 @@ var portCmd = &cobra.Command{
 			return nil
 		}
 
-		printPortResults(results)
+		if jsonOut {
+			if err := ux.PrintJSON(results); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
+			}
+		} else {
+			printPortResults(results)
+		}
 
 		if db != nil {
 			persistPortResults(db, wsID, results)

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -76,13 +75,13 @@ var fuzzCmd = &cobra.Command{
 		}
 
 		client := httpclient.NewFromEnv()
-		fuzzer := surface.NewFuzzer(client, concur)
+		fuzzer := surface.NewFuzzer(client, effConcurrency())
 		fuzzer.IgnoreStatus = parseStatuses(fuzzIgnore)
 		fuzzer.StatusCodes = parseInts(fuzzStatusCodes)
 		fuzzer.ExcludeSize = parseInt64s(fuzzExcludeSize)
 		fuzzer.Retries = fuzzRetries
 		fuzzer.Progress = fuzzProgress
-		fuzzer.Limiter = ux.NewLimiter(ux.ProfileFromString(rateProf))
+		fuzzer.Limiter = ux.NewLimiter(ux.ProfileFromString(effRateProfile()))
 
 		if fuzzAuth != "" || fuzzBearer != "" || fuzzNTLM != "" {
 			user, pass, _ := strings.Cut(fuzzAuth, ":")
@@ -109,6 +108,7 @@ var fuzzCmd = &cobra.Command{
 		// Modo s3: testa nomes de bucket (targetURL é só base/placeholder).
 		if fuzzS3 {
 			names := readWordlist(fuzzWordlist)
+			var s3Results []surface.S3Result
 			for _, r := range fuzzer.FuzzS3(names) {
 				if !r.Exists {
 					continue
@@ -118,18 +118,29 @@ var fuzzCmd = &cobra.Command{
 					label = "exists/private"
 				}
 				fmt.Printf("[%d] %s (%s)\n", r.StatusCode, r.Bucket, label)
+				s3Results = append(s3Results, r)
+			}
+			if jsonOut {
+				if err := ux.PrintJSON(s3Results); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
 
 		// Modo dns: resolve subdomínios via recon.Resolver.
 		if fuzzDNS != "" {
-			resolved, derr := surface.FuzzDNS(concur, fuzzDNS, fuzzWordlist, fuzzNameserver)
+			resolved, derr := surface.FuzzDNS(effConcurrency(), fuzzDNS, fuzzWordlist, fuzzNameserver)
 			if derr != nil {
 				return derr
 			}
 			for _, r := range resolved {
 				fmt.Printf("%s %s\n", r.Subdomain, r.IP)
+			}
+			if jsonOut {
+				if err := ux.PrintJSON(resolved); err != nil {
+					return err
+				}
 			}
 			return nil
 		}
@@ -162,7 +173,7 @@ var fuzzCmd = &cobra.Command{
 			if lerr != nil {
 				return fmt.Errorf("resume: %w", lerr)
 			}
-			found, ferr := fuzzer.FuzzResume(context.Background(), *state)
+			found, ferr := fuzzer.FuzzResume(Ctx(), *state)
 			if ferr != nil {
 				return ferr
 			}
@@ -174,7 +185,7 @@ var fuzzCmd = &cobra.Command{
 
 		// Modo vhost dedicado.
 		if fuzzVhost {
-			found, verr := fuzzer.FuzzVhost(context.Background(), targetURL, fuzzWordlist)
+			found, verr := fuzzer.FuzzVhost(Ctx(), targetURL, fuzzWordlist)
 			if verr != nil {
 				return verr
 			}
@@ -186,7 +197,7 @@ var fuzzCmd = &cobra.Command{
 
 		// Recursão BFS.
 		if fuzzRecursive {
-			all, rerr := fuzzer.FuzzRecursive(context.Background(), targetURL, fuzzWordlist, fuzzDepth)
+			all, rerr := fuzzer.FuzzRecursive(Ctx(), targetURL, fuzzWordlist, fuzzDepth)
 			if rerr != nil {
 				return rerr
 			}
@@ -207,7 +218,7 @@ var fuzzCmd = &cobra.Command{
 			effectiveWL = extWL
 		}
 
-		results, err := fuzzer.FuzzWeb(context.Background(), targetURL, effectiveWL, fuzzHeader, fuzzPost)
+		results, err := fuzzer.FuzzWeb(Ctx(), targetURL, effectiveWL, fuzzHeader, fuzzPost)
 		if err != nil {
 			db.Close()
 			return err
@@ -228,6 +239,15 @@ var fuzzCmd = &cobra.Command{
 					fmt.Sprintf("url=%s size=%d", r.URL, r.Size)); err == nil {
 					persisted++
 				}
+			}
+		}
+
+		if jsonOut {
+			if err := ux.PrintJSON(findings); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
 			}
 		}
 

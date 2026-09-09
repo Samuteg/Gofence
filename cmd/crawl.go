@@ -24,7 +24,7 @@ var crawlCmd = &cobra.Command{
 			return err
 		}
 		client := httpclient.NewFromEnv()
-		crawler := surface.NewCrawler(client, crawlDepth, concur)
+		crawler := surface.NewCrawler(client, crawlDepth, effConcurrency())
 		crawler.WAF = ux.NewWAFDetector(0)
 		crawler.Limiter = ux.NewLimiter(ux.ProfileFromString(rateProf))
 
@@ -38,6 +38,19 @@ var crawlCmd = &cobra.Command{
 
 		result := crawler.Crawl(targetURL)
 
+		if jsonOut {
+			if err := ux.PrintJSON(result); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
+			}
+			if db != nil {
+				persistSecrets(db, wsID, targetURL, result)
+			}
+			return nil
+		}
+
 		out, _ := json.MarshalIndent(result.URLs, "", "  ")
 		fmt.Printf("URLs found (%d):\n%s\n", len(result.URLs), string(out))
 
@@ -47,20 +60,22 @@ var crawlCmd = &cobra.Command{
 		}
 
 		if db != nil {
-			host := hostOf(targetURL)
-			ip := data.ResolveIP(host)
-			for _, s := range result.Secrets {
-				if err := db.SaveFinding(wsID, ip, host, secretSeverity(s.Type),
-					fmt.Sprintf("secret %s", s.Type),
-					fmt.Sprintf("source=%s snippet=%s", s.Source, s.Snippet)); err == nil {
-					// persisted
-				}
-			}
-			fmt.Fprintf(os.Stderr, "persisted %d secrets to workspace\n", len(result.Secrets))
-			db.Close()
+			persistSecrets(db, wsID, targetURL, result)
 		}
 		return nil
 	},
+}
+
+// persistSecrets grava os segredos encontrados no workspace (best-effort).
+func persistSecrets(db *data.DB, wsID int64, targetURL string, result *surface.CrawlResult) {
+	host := hostOf(targetURL)
+	ip := data.ResolveIP(host)
+	for _, s := range result.Secrets {
+		_ = db.SaveFinding(wsID, ip, host, secretSeverity(s.Type),
+			fmt.Sprintf("secret %s", s.Type),
+			fmt.Sprintf("source=%s snippet=%s", s.Source, s.Snippet))
+	}
+	fmt.Fprintf(os.Stderr, "persisted %d secrets to workspace\n", len(result.Secrets))
 }
 
 func secretSeverity(t string) string {

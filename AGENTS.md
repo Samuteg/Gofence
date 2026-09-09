@@ -9,7 +9,8 @@ Offensive security CLI written in Go. Single pure-Go binary with embedded assets
 - **Run all tests**: `go test ./...`
 - **Run a single package**: `go test ./internal/surface`
 - **Run a focused test**: `go test -v ./internal/surface -run TestFuzzer`
-- **Static analysis**: `go vet ./...` (note: `internal/recon/portscan.go` has known IPv6 formatting warnings)
+- **Static analysis**: `go vet ./...` (must be clean — IPv6 addresses via `net.JoinHostPort`)
+- **Build with version**: `make build` or `make static` (injects version/commit via ldflags)
 
 ## Core Architecture & Directory Responsibilities
 

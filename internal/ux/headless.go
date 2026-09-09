@@ -92,10 +92,16 @@ func ResolveTarget(args []string, stdin io.Reader, piped bool) (string, int, err
 	return strings.Fields(lines[0])[0], len(lines) - 1, nil
 }
 
-func isatty(f *os.File) bool {
+// IsTTY reports whether f refers to a character device (terminal).
+// Canonical implementation: cmd/root.go and headless detection both use it.
+func IsTTY(f *os.File) bool {
 	fi, err := f.Stat()
 	if err != nil {
 		return false
 	}
 	return (fi.Mode() & os.ModeCharDevice) != 0
+}
+
+func isatty(f *os.File) bool {
+	return IsTTY(f)
 }

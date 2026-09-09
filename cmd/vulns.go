@@ -7,6 +7,7 @@ import (
 	"github.com/nixteg/gofence/internal/assets"
 	"github.com/nixteg/gofence/internal/data"
 	"github.com/nixteg/gofence/internal/surface"
+	"github.com/nixteg/gofence/internal/ux"
 	"github.com/nixteg/gofence/pkg/httpclient"
 	"github.com/spf13/cobra"
 )
@@ -60,6 +61,7 @@ var vulnsCmd = &cobra.Command{
 		var (
 			totalExec, totalMatched, totalFailed int
 			persisted                            int
+			matches                              []*surface.VulnResult
 		)
 		for _, tmpl := range templates {
 			result := engine.RunTemplate(tmpl, target)
@@ -67,6 +69,7 @@ var vulnsCmd = &cobra.Command{
 			totalFailed += result.Failed
 			if result.Matched {
 				totalMatched++
+				matches = append(matches, result)
 				fmt.Printf("[MATCH] %s (%s): %s\n", result.Name, result.TemplateID, result.Details)
 			}
 			if db != nil && result.Matched {
@@ -78,8 +81,28 @@ var vulnsCmd = &cobra.Command{
 			}
 		}
 
-		fmt.Printf("\nSUMMARY: templates=%d executed=%d matched=%d failed=%d\n",
-			len(templates), totalExec, totalMatched, totalFailed)
+		if jsonOut {
+			payload := map[string]interface{}{
+				"target":   target,
+				"matches":  matches,
+				"summary": map[string]int{
+					"templates": len(templates),
+					"executed":  totalExec,
+					"matched":   totalMatched,
+					"failed":    totalFailed,
+				},
+			}
+			if err := ux.PrintJSON(payload); err != nil {
+				if db != nil {
+					db.Close()
+				}
+				return err
+			}
+		} else {
+			fmt.Printf("\nSUMMARY: templates=%d executed=%d matched=%d failed=%d\n",
+				len(templates), totalExec, totalMatched, totalFailed)
+		}
+
 		if db != nil {
 			fmt.Fprintf(os.Stderr, "persisted %d vuln findings to workspace\n", persisted)
 			db.Close()

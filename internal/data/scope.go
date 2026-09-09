@@ -79,6 +79,28 @@ func FilterAllowed(g *ScopeGuard, hosts []string, action string) []string {
 	return out
 }
 
+// HostOf extrai host[:porta] de um alvo que pode ser URL, host:porta,
+// CIDR ou host nu. Canonical para formatting/scoping em todo o CLI.
+func HostOf(target string) string {
+	host := strings.TrimSpace(target)
+	if host == "" {
+		return ""
+	}
+	if strings.Contains(host, "://") {
+		if u, err := url.Parse(host); err == nil && u.Host != "" {
+			return u.Host
+		}
+	}
+	if ip, _, err := net.ParseCIDR(host); err == nil {
+		return ip.String()
+	}
+	// Preserve colchetes IPv6 removal: host:porta sem esquema.
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		return strings.Trim(h, "[]")
+	}
+	return strings.Trim(host, "[]")
+}
+
 func hostToIP(host string) net.IP {
 	host = strings.TrimSpace(host)
 	if host == "" {

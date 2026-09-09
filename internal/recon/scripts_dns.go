@@ -3,6 +3,7 @@ package recon
 import (
 	"context"
 	"fmt"
+	"net"
 	"time"
 
 	"github.com/miekg/dns"
@@ -16,7 +17,8 @@ func init() {
 		m := new(dns.Msg)
 		m.SetQuestion("example.com.", dns.TypeA)
 		c := &dns.Client{Net: "udp", Timeout: 2 * time.Second}
-		r, _, err := c.ExchangeContext(ctx, m, fmt.Sprintf("%s:%d", host, port))
+		// JoinHostPort para suportar IPv6 (host vira [addr]:port).
+		r, _, err := c.ExchangeContext(ctx, m, net.JoinHostPort(host, fmt.Sprintf("%d", port)))
 		if err != nil {
 			return ScriptResult{Service: "dns", Name: "resolver", OK: false, Detail: err.Error()}
 		}
