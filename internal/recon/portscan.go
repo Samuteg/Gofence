@@ -2,6 +2,7 @@ package recon
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"net"
 	"regexp"
@@ -124,6 +125,12 @@ func (ps *PortScanner) ScanTCP(target string, ports []int) []PortResult {
 // ScanTCPHosts varre cada alvo da lista (hosts individuais, nunca CIDR —
 // expanda antes com ExpandCIDR) e rotula cada resultado com o Host.
 func (ps *PortScanner) ScanTCPHosts(targets []string, ports []int) []PortResult {
+	return ps.ScanTCPHostsContext(context.Background(), targets, ports)
+}
+
+// ScanTCPHostsContext é o ScanTCPHosts com cancelamento: parado o ctx,
+// nenhuma nova porta é enfileirada e os resultados parciais são retornados.
+func (ps *PortScanner) ScanTCPHostsContext(ctx context.Context, targets []string, ports []int) []PortResult {
 	if len(targets) == 0 {
 		return nil
 	}
@@ -131,11 +138,24 @@ func (ps *PortScanner) ScanTCPHosts(targets []string, ports []int) []PortResult 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var results []PortResult
+	canceled := false
 
 	for _, target := range targets {
 		for _, port := range ports {
+			if ctx.Err() != nil {
+				canceled = true
+				break
+			}
 			wg.Add(1)
-			sem <- struct{}{}
+			select {
+			case sem <- struct{}{}:
+			case <-ctx.Done():
+				wg.Done()
+				canceled = true
+			}
+			if canceled {
+				break
+			}
 			go func(t string, p int) {
 				defer wg.Done()
 				defer func() { <-sem }()
@@ -152,6 +172,9 @@ func (ps *PortScanner) ScanTCPHosts(targets []string, ports []int) []PortResult 
 					mu.Unlock()
 				}
 			}(target, port)
+		}
+		if canceled {
+			break
 		}
 	}
 	wg.Wait()
@@ -206,8 +229,16 @@ func readBanner(conn net.Conn, timeout time.Duration) string {
 }
 
 func (ps *PortScanner) ScanUDP(target string, ports []int) []PortResult {
+	return ps.ScanUDPContext(context.Background(), target, ports)
+}
+
+// ScanUDPContext é o ScanUDP com cancelamento (retorna parciais).
+func (ps *PortScanner) ScanUDPContext(ctx context.Context, target string, ports []int) []PortResult {
 	var results []PortResult
 	for _, port := range ports {
+		if ctx.Err() != nil {
+			break
+		}
 		addr := net.JoinHostPort(target, strconv.Itoa(port))
 		conn, err := ps.Dial("udp", addr, ps.Timeout)
 		if err != nil {

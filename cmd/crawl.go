@@ -36,7 +36,7 @@ var crawlCmd = &cobra.Command{
 			return err
 		}
 
-		result := crawler.Crawl(targetURL)
+		result := crawler.CrawlContext(Ctx(), targetURL)
 
 		if jsonOut {
 			if err := ux.PrintJSON(result); err != nil {

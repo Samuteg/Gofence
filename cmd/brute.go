@@ -63,7 +63,7 @@ var bruteSSH = &cobra.Command{
 		}
 		return runBrute("ssh", target, func() <-chan exploit.BruteResult {
 			engine := exploit.NewBruteEngine(effConcurrency(), bruteNoBackoff)
-			return engine.BruteSSH(target, bruteUser, bruteWordlist)
+			return engine.BruteSSHContext(Ctx(), target, bruteUser, bruteWordlist)
 		})
 	},
 }
@@ -79,7 +79,7 @@ var bruteHTTP = &cobra.Command{
 		}
 		return runBrute("http", target, func() <-chan exploit.BruteResult {
 			engine := exploit.NewBruteEngine(effConcurrency(), bruteNoBackoff)
-			return engine.BruteHTTP(target, bruteUser, bruteWordlist)
+			return engine.BruteHTTPContext(Ctx(), target, bruteUser, bruteWordlist)
 		})
 	},
 }
@@ -95,7 +95,7 @@ var bruteFTP = &cobra.Command{
 		}
 		return runBrute("ftp", target, func() <-chan exploit.BruteResult {
 			engine := exploit.NewBruteEngine(effConcurrency(), bruteNoBackoff)
-			return engine.BruteFTP(target, bruteUser, bruteWordlist)
+			return engine.BruteFTPContext(Ctx(), target, bruteUser, bruteWordlist)
 		})
 	},
 }

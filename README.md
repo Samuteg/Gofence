@@ -572,10 +572,17 @@ gofence tls alvo.com:443 | jq '.subject'
 
 ### Cancelamento (Ctrl+C)
 
-Todos os comandos de longa duração escutam SIGINT/SIGTERM: a onda para de
-enfileirar trabalho, as requisições em voo terminam e os recursos (temp
+Todos os comandos de longa duração escutam SIGINT/SIGTERM — incluindo os
+engines (`port`, `dns`, `subdomains`, `brute`, `crawl`, `fuzz`): a onda para
+de enfileirar trabalho, as requisições em voo terminam e os recursos (temp
 files, estado de resume) são liberados pelos `defer` — em vez de morrer no
 meio do scan.
+
+### Autocomplete de shell
+
+```bash
+source <(gofence completion bash)   # também: zsh, fish, powershell
+```
 
 ### Rate Limiting (evasão)
 

@@ -51,7 +51,10 @@ var s3Cmd = &cobra.Command{
 			found = append(found, r)
 			if db != nil {
 				details := fmt.Sprintf("bucket=%s status=%d visibility=%s url=%s", r.Bucket, r.StatusCode, label, r.URL)
-				if err := db.SaveFinding(wsID, "", r.Bucket, "medium",
+				// Cada bucket precisa de chave única: hosts tem UNIQUE(workspace_id,
+				// ip) — usar o nome do bucket como "ip" evita colapsar todos os
+				// buckets numa única linha com hostname sobrescrito.
+				if err := db.SaveFinding(wsID, r.Bucket, r.Bucket, "medium",
 					"open s3 bucket", details); err == nil {
 					persisted++
 				}

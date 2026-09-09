@@ -81,7 +81,7 @@ var dnsCmd = &cobra.Command{
 			}
 		}
 
-		results, err := resolver.BruteForce(domain, dnsWordlist)
+		results, err := resolver.BruteForceContext(Ctx(), domain, dnsWordlist)
 		if err != nil {
 			return fmt.Errorf("bruteforce: %w", err)
 		}

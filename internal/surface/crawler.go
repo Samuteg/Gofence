@@ -41,6 +41,7 @@ type Crawler struct {
 	WAF         *ux.WAFDetector
 	Limiter     *rate.Limiter
 	visited     sync.Map
+	ctx         context.Context
 	urls        []string
 	secrets     []Secret
 	mu          sync.Mutex
@@ -57,7 +58,14 @@ func NewCrawler(client *httpclient.Client, maxDepth, concurrency int) *Crawler {
 }
 
 func (c *Crawler) Crawl(startURL string) *CrawlResult {
+	return c.CrawlContext(context.Background(), startURL)
+}
+
+// CrawlContext executa o crawl respeitando ctx (cancelamento via Ctrl+C):
+// nenhuma nova requisição é feita após o cancelamento.
+func (c *Crawler) CrawlContext(ctx context.Context, startURL string) *CrawlResult {
 	baseURL, _ := url.Parse(startURL)
+	c.ctx = ctx
 	c.crawlLevel(startURL, 0, baseURL)
 
 	return &CrawlResult{
@@ -70,6 +78,9 @@ func (c *Crawler) crawlLevel(targetURL string, depth int, base *url.URL) {
 	if depth > c.MaxDepth {
 		return
 	}
+	if c.ctx != nil && c.ctx.Err() != nil {
+		return
+	}
 	if _, loaded := c.visited.LoadOrStore(targetURL, true); loaded {
 		return
 	}
@@ -77,7 +88,7 @@ func (c *Crawler) crawlLevel(targetURL string, depth int, base *url.URL) {
 		return
 	}
 	if c.Limiter != nil {
-		if err := c.Limiter.Wait(context.Background()); err != nil {
+		if err := c.Limiter.Wait(c.ctx); err != nil {
 			return
 		}
 	}

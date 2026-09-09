@@ -1,6 +1,7 @@
 package recon
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net"
@@ -40,6 +41,11 @@ func NewSynScanner(concurrency int, timeout time.Duration) *SynScanner {
 // ScanSYN varre as portas com SYN scan. Retorna erro quando o probe não
 // consegue abrir o socket raw (sem privilégio) — nunca trava.
 func (ss *SynScanner) ScanSYN(target string, ports []int) ([]PortResult, error) {
+	return ss.ScanSYNContext(context.Background(), target, ports)
+}
+
+// ScanSYNContext é o ScanSYN com cancelamento (retorna parciais).
+func (ss *SynScanner) ScanSYNContext(ctx context.Context, target string, ports []int) ([]PortResult, error) {
 	if err := ss.Probe.Open(); err != nil {
 		return nil, fmt.Errorf("SYN scan requires raw sockets: %w (run as root/sudo or use the default connect scan)", err)
 	}
@@ -49,10 +55,22 @@ func (ss *SynScanner) ScanSYN(target string, ports []int) ([]PortResult, error) 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	var results []PortResult
+	canceled := false
 
 	for _, port := range ports {
+		if ctx.Err() != nil {
+			break
+		}
 		wg.Add(1)
-		sem <- struct{}{}
+		select {
+		case sem <- struct{}{}:
+		case <-ctx.Done():
+			wg.Done()
+			canceled = true
+		}
+		if canceled {
+			break
+		}
 		go func(p int) {
 			defer wg.Done()
 			defer func() { <-sem }()

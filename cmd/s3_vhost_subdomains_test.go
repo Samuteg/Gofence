@@ -83,11 +83,7 @@ func TestResolveFuzzWordlistEmbeddedFallback(t *testing.T) {
 
 // @spec:subdomains — resolveSubWordlist cai na wordlist embutida de subdomínios
 func TestResolveSubWordlistEmbeddedFallback(t *testing.T) {
-	old := fuzzWordlist
-	fuzzWordlist = ""
-	t.Cleanup(func() { fuzzWordlist = old })
-
-	path, cleanup, err := resolveSubWordlist()
+	path, cleanup, err := resolveSubWordlist("")
 	if err != nil {
 		t.Fatalf("resolveSubWordlist: %v", err)
 	}
@@ -99,6 +95,26 @@ func TestResolveSubWordlistEmbeddedFallback(t *testing.T) {
 	}
 	if len(strings.TrimSpace(string(b))) == 0 {
 		t.Errorf("expected non-empty embedded subdomain wordlist")
+	}
+}
+
+// @spec:subdomains — resolveSubWordlist devolve a wordlist explícita intacta
+// e não consulta nem muta globals do fuzz
+func TestResolveSubWordlistExplicit(t *testing.T) {
+	dir := t.TempDir()
+	wl := filepath.Join(dir, "subs.txt")
+	if err := os.WriteFile(wl, []byte("alpha\nbeta\n"), 0o600); err != nil {
+		t.Fatalf("write: %v", err)
+	}
+	path, cleanup, err := resolveSubWordlist(wl)
+	if err != nil {
+		t.Fatalf("resolveSubWordlist: %v", err)
+	}
+	if cleanup != nil {
+		t.Errorf("expected nil cleanup for explicit wordlist")
+	}
+	if path != wl {
+		t.Errorf("expected %q, got %q", wl, path)
 	}
 }
 
@@ -224,9 +240,9 @@ func TestSubdomainsCommandOutOfScope(t *testing.T) {
 	if err := os.WriteFile(wl, []byte("alpha\n"), 0o600); err != nil {
 		t.Fatalf("write: %v", err)
 	}
-	oldWL := fuzzWordlist
-	fuzzWordlist = wl
-	t.Cleanup(func() { fuzzWordlist = oldWL })
+	oldWL := subWordlist
+	subWordlist = wl
+	t.Cleanup(func() { subWordlist = oldWL })
 
 	// Domínio não-IP é bloqueado por não ser resolvível dentro do escopo.
 	err = subdomainsCmd.RunE(subdomainsCmd, []string{"inexistente.gofence.invalid"})

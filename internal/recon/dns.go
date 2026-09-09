@@ -2,6 +2,7 @@ package recon
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"os"
 	"sync"
@@ -36,6 +37,12 @@ func NewResolver(concurrency int) *Resolver {
 }
 
 func (r *Resolver) BruteForce(domain, wordlistPath string) ([]DNSResult, error) {
+	return r.BruteForceContext(context.Background(), domain, wordlistPath)
+}
+
+// BruteForceContext é o BruteForce com cancelamento: parado o ctx, nenhuma
+// nova resolução é enfileirada e os achados parciais são retornados.
+func (r *Resolver) BruteForceContext(ctx context.Context, domain, wordlistPath string) ([]DNSResult, error) {
 	file, err := os.Open(wordlistPath)
 	if err != nil {
 		return nil, fmt.Errorf("open wordlist: %w", err)
@@ -57,14 +64,27 @@ func (r *Resolver) BruteForce(domain, wordlistPath string) ([]DNSResult, error) 
 	var found int64
 
 	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
+	canceled := false
+	for scanner.Scan() && !canceled {
+		if ctx.Err() != nil {
+			break
+		}
 		word := scanner.Text()
 		if word == "" {
 			continue
 		}
 		sub := fmt.Sprintf("%s.%s", word, domain)
 		wg.Add(1)
-		sem <- struct{}{}
+		select {
+		case sem <- struct{}{}:
+		case <-ctx.Done():
+			wg.Done()
+			canceled = true
+			break
+		}
+		if canceled {
+			break
+		}
 		go func(sub string) {
 			defer wg.Done()
 			defer func() { <-sem }()

@@ -6,14 +6,29 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 
 	_ "modernc.org/sqlite"
 )
 
+// ipCache memoiza resoluções DNS dentro do processo: loops de persistência
+// chamam ResolveIP por finding, e sem cache cada finding viraria uma query.
+var ipCache sync.Map // host -> ip string
+
 // ResolveIP returns the first IPv4 for host, best-effort (empty on failure).
+// Resultados são memoizados por host (inclusive falhas) por processo.
 func ResolveIP(host string) string {
 	host = stripPort(host)
+	if v, ok := ipCache.Load(host); ok {
+		return v.(string)
+	}
+	ip := lookupIP(host)
+	ipCache.Store(host, ip)
+	return ip
+}
+
+func lookupIP(host string) string {
 	ips, err := net.LookupIP(host)
 	if err != nil {
 		return ""
@@ -27,6 +42,15 @@ func ResolveIP(host string) string {
 		return ips[0].String()
 	}
 	return ""
+}
+
+// ResetIPCache limpa o cache de resoluções (útil em testes e scans longos
+// que duram mais que o TTL do DNS).
+func ResetIPCache() {
+	ipCache.Range(func(k, _ interface{}) bool {
+		ipCache.Delete(k)
+		return true
+	})
 }
 
 func stripPort(host string) string {
@@ -193,6 +217,11 @@ func (db *DB) FindingCreate(hostID int64, severity, title, data string) error {
 }
 
 func (db *DB) ScopeAdd(workspaceID int64, cidr, scopeType string) error {
+	// Validação na entrada: CIDR inválido seria silenciosamente ignorado pelo
+	// ScopeGuard depois (fail-closed), mas o operador merece o erro agora.
+	if _, _, err := net.ParseCIDR(cidr); err != nil {
+		return fmt.Errorf("invalid CIDR %q: %w", cidr, err)
+	}
 	_, err := db.Conn.Exec(
 		"INSERT INTO scope (workspace_id, cidr, type) VALUES (?, ?, ?)",
 		workspaceID, cidr, scopeType,

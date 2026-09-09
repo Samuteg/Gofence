@@ -74,6 +74,7 @@ var osintCmd = &cobra.Command{
 }
 
 func init() {
-	osintCmd.Flags().StringVar(&osintProvider, "provider", "all", "shodan|censys|securitytrails|all")
+	osintCmd.Flags().StringVar(&osintProvider, "provider", "all",
+		"crtsh|hackertarget|whois|shodan|censys|securitytrails|all (keyless: crtsh, hackertarget, whois)")
 	rootCmd.AddCommand(osintCmd)
 }

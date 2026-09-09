@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	// subNameserver é o nameserver opcional (host:porta) para as resoluções.
+	// Flags próprias do comando (não mutam globals do fuzz).
 	subNameserver string
+	subWordlist   string
 )
 
 var subdomainsCmd = &cobra.Command{
@@ -25,11 +26,8 @@ var subdomainsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		if subNameserver != "" {
-			fuzzNameserver = subNameserver
-		}
 
-		wordlist, cleanup, err := resolveSubWordlist()
+		wordlist, cleanup, err := resolveSubWordlist(subWordlist)
 		if err != nil {
 			return err
 		}
@@ -50,7 +48,7 @@ var subdomainsCmd = &cobra.Command{
 			return fmt.Errorf("target %s is out of scope", domain)
 		}
 
-		resolved, err := surface.FuzzDNS(effConcurrency(), domain, wordlist, fuzzNameserver)
+		resolved, err := surface.FuzzDNSContext(Ctx(), effConcurrency(), domain, wordlist, subNameserver)
 		if err != nil {
 			db.Close()
 			return err
@@ -87,12 +85,12 @@ var subdomainsCmd = &cobra.Command{
 	},
 }
 
-// resolveSubWordlist resolve a wordlist de subdomínios: -w explícita ou a
-// wordlist embutida subdomains.txt como fallback (mesma política do dns).
-// Retorna (path, cleanup, error).
-func resolveSubWordlist() (string, func(), error) {
-	if fuzzWordlist != "" {
-		return fuzzWordlist, nil, nil
+// resolveSubWordlist resolve a wordlist de subdomínios: -w explícita (via
+// wlPath) ou a wordlist embutida subdomains.txt como fallback (mesma política
+// do dns). Retorna (path, cleanup, error).
+func resolveSubWordlist(wlPath string) (string, func(), error) {
+	if wlPath != "" {
+		return wlPath, nil, nil
 	}
 	if assets.HasWordlist("subdomains.txt") {
 		words, err := assets.Wordlist("subdomains.txt")
@@ -110,7 +108,7 @@ func resolveSubWordlist() (string, func(), error) {
 }
 
 func init() {
-	subdomainsCmd.Flags().StringVarP(&fuzzWordlist, "wordlist", "w", "", "subdomain wordlist (defaults to embedded list)")
+	subdomainsCmd.Flags().StringVarP(&subWordlist, "wordlist", "w", "", "subdomain wordlist (defaults to embedded list)")
 	subdomainsCmd.Flags().StringVar(&subNameserver, "nameserver", "", "DNS nameserver host:port for resolutions")
 	rootCmd.AddCommand(subdomainsCmd)
 }

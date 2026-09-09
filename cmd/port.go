@@ -98,7 +98,7 @@ var portCmd = &cobra.Command{
 
 		// Ping sweep primeiro: só varre hosts vivos quando pedido.
 		if portPing {
-			alive := scanner.PingSweep(targets, []int{80, 443, 22, 8080})
+			alive := scanner.PingSweepContext(Ctx(), targets, []int{80, 443, 22, 8080})
 			if len(alive) == 0 {
 				fmt.Fprintln(os.Stderr, "ping sweep: no live hosts found")
 				return nil
@@ -110,19 +110,25 @@ var portCmd = &cobra.Command{
 		var results []recon.PortResult
 		if portUDP {
 			for _, t := range targets {
-				results = append(results, scanner.ScanUDP(t, recon.TopUDPPorts(portTop))...)
+				if Ctx().Err() != nil {
+					break
+				}
+				results = append(results, scanner.ScanUDPContext(Ctx(), t, recon.TopUDPPorts(portTop))...)
 			}
 		} else if portSyn {
 			synScanner := recon.NewSynScanner(effConcurrency(), timeout)
 			for _, t := range targets {
-				synResults, serr := synScanner.ScanSYN(t, ports)
+				if Ctx().Err() != nil {
+					break
+				}
+				synResults, serr := synScanner.ScanSYNContext(Ctx(), t, ports)
 				if serr != nil {
 					return serr
 				}
 				results = append(results, synResults...)
 			}
 		} else {
-			results = scanner.ScanTCPHosts(targets, ports)
+			results = scanner.ScanTCPHostsContext(Ctx(), targets, ports)
 		}
 
 		// Fingerprint de SO sobre os hosts com portas abertas (sinais TCP).

@@ -60,6 +60,25 @@ Ver `~/.gofence/config.yaml` e env vars em [Configuração](../README.md#configu
 
 ---
 
+## `completion` — Autocomplete de shell
+
+Scripts de autocomplete embutidos (via Cobra):
+
+```bash
+# Bash (sessão atual)
+source <(gofence completion bash)
+
+# Persistir
+ gofence completion bash > ~/.local/share/bash-completion/completions/gofence
+
+# zsh / fish / powershell
+gofence completion zsh
+gofence completion fish
+gofence completion powershell
+```
+
+---
+
 ## `dns` — DNS brute-force e AXFR
 
 Brute-force de subdomínios e transferência de zona.
@@ -130,7 +149,7 @@ gofence osint 1.2.3.4 --json | jq '.[].data'
 
 | Flag | Padrão | Descrição |
 |------|--------|-----------|
-| `--provider` | `all` | `shodan`\|`censys`\|`securitytrails`\|`crtsh`\|`hackertarget`\|`whois`\|`all` |
+| `--provider` | `all` | `crtsh`\|`hackertarget`\|`whois`\|`shodan`\|`censys`\|`securitytrails`\|`all` (keyless: crtsh, hackertarget, whois) |
 
 Retry com backoff em HTTP 429. Resultados persistidos como `info/osint <provider>`.
 
@@ -391,7 +410,8 @@ gofence listen --proto udp 5555
 | `kill <id>` | Encerra a sessão |
 
 `Ctrl+C` encerra graciosamente (fecha listener e sessões). Em pipe, roda em
-modo servidor puro.
+modo servidor puro. O modo **UDP** rastreia cada remetente como uma sessão
+distinta e responde via `send <id>`.
 
 ---
 

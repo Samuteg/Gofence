@@ -148,6 +148,15 @@ func defaultDBPath() string {
 	return filepath.Join(home, ".gofence", "gofence.db")
 }
 
+func init() {
+	// Completion de shell: o Cobra já embute o comando `completion`; aqui
+	// apenas o reexponemos com descrição amigável no --help.
+	rootCmd.CompletionOptions.DisableDefaultCmd = false
+	if c, _, err := rootCmd.Find([]string{"completion"}); err == nil && c != rootCmd {
+		c.Short = "Generate shell completion script (bash|zsh|fish|powershell)"
+	}
+}
+
 func isatty(f *os.File) bool {
 	return ux.IsTTY(f)
 }
